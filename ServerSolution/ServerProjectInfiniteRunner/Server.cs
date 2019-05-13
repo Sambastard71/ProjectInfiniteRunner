@@ -12,11 +12,17 @@ namespace ServerProjectInfiniteRunner
 
     public class Server
     {
-        //Command List To Update
-        const int COMMAND_JOIN = 0;
-        const int COMMAND_UPDATE = 1;
-        const int COMMAND_SPAWN = 2;
 
+        const int MAX_ROOM = 32;
+
+        //Command List To Update
+        public const int COMMAND_FAST_JOIN = 0;
+        public const int COMMAND_JOIN = 1;
+        public const int COMMAND_UPDATE = 2;
+        public const int COMMAND_SPAWN = 3;
+
+        public const int COMMAND_ERROR = 4;
+        public const int COMMAND_WELCOME = 5;
 
         ITransport transport;
         command[] commands;
@@ -24,19 +30,19 @@ namespace ServerProjectInfiniteRunner
         //List of clients in connected
         List<Client> clients;
 
+        public int numOfClients
+        {
+            get
+            {
+                return clients.Count;
+            }
+        }
+
         public List<Client> Clients
         {
             get
             {
                 return clients;
-            }
-        }
-
-        public int numOfClient
-        {
-            get
-            {
-                return clients.Count;
             }
         }
 
@@ -50,12 +56,21 @@ namespace ServerProjectInfiniteRunner
             }
         }
 
+        public int numOfRooms
+        {
+            get
+            {
+                return Rooms.Count;
+            }
+        }
+
         //constructor that init the server parameters
         public Server(ITransport transport)
         {
             this.transport = transport;
 
             commands = new command[COMMAND_SPAWN + 1];
+            commands[COMMAND_FAST_JOIN] = Join;
             commands[COMMAND_JOIN] = Join;
             commands[COMMAND_UPDATE] = Update;
             commands[COMMAND_SPAWN] = Spawn;
@@ -64,7 +79,7 @@ namespace ServerProjectInfiniteRunner
             rooms = new List<Room>();
             rooms.Add(new Room((uint)rooms.Count));
         }
-        
+
         public void Start()
         {
             while (true)
@@ -90,7 +105,11 @@ namespace ServerProjectInfiniteRunner
             }
 
             commands[data[0]](data, sender);
-            
+
+            foreach (Room room in Rooms)
+            {
+                room.Process();
+            }
         }
 
         //Method that send packet to the client
@@ -102,9 +121,10 @@ namespace ServerProjectInfiniteRunner
 
         //TODO
         //Make The commands
-        //Welcome
         //Update
         //Spawn
+
+        //Join Method For Quick Game && Classic Game
         private void Join(byte[] packet, EndPoint endPoint)
         {
             //Check the lenght of the join packet
@@ -117,9 +137,9 @@ namespace ServerProjectInfiniteRunner
             Client c = new Client(endPoint, this);
 
             //Check if the client is already joined
-            if (Clients.Exists(x => x.EndPoint.Equals(c.EndPoint)))
+            if (clients.Exists(client => client.EndPoint.Equals(c.EndPoint)))
             {
-                //TODO Add Malus To Client
+                //TODO add Malus to the client
                 return;
             }
 
@@ -128,29 +148,53 @@ namespace ServerProjectInfiniteRunner
 
             //Check for empty room
             bool playerJoined = false;
-            foreach (Room room in Rooms)
+            uint roomId = uint.MaxValue;
+            int idInRoom = 2;
+
+            if (packet[0] == COMMAND_FAST_JOIN)
             {
-                if (room.NumOfPlayer <= 1)
+                foreach (Room room in Rooms)
                 {
-                    playerJoined = room.AddPlayer(c);
+                    if (room.NumOfPlayer <= 1)
+                    {
+                        playerJoined = room.AddPlayer(c);
+                        roomId = room.ID;
+                        playerJoined = true;
+                    }
                 }
+
             }
 
             //if there isn't an empty room create it and add the client to it
-            if (!playerJoined)
+            if (!playerJoined || packet[0] == COMMAND_JOIN)
             {
-                Room r = new Room((uint)rooms.Count, c);
-                rooms.Add(r);
+                Room r = null;
+                if (rooms.Count < MAX_ROOM)
+                {
+                    r = new Room((uint)rooms.Count, c);
+                    idInRoom = 1;
+                }
+                else
+                {
+                    Packet error = new Packet(COMMAND_ERROR, "Max number of room reached try to reconnect");
+                    transport.Send(error.GetData(), endPoint);
+                    return;
+                }
+
+                if (r != null)
+                {
+                    rooms.Add(r);
+                    roomId = r.ID;
+                }
             }
 
+
             //TODO make welcomePacket and send it
+            Packet welcome = new Packet(COMMAND_WELCOME, roomId, idInRoom);
+
+            transport.Send(welcome.GetData(), endPoint);
         }
-
-        private void Welcome(EndPoint endPoint)
-        {
-
-        }
-
+        
         public void Update(byte[] packet, EndPoint endPoint)
         {
         }

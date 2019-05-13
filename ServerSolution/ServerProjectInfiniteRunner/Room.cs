@@ -29,13 +29,16 @@ namespace ServerProjectInfiniteRunner
         }
         
         Client[] players;
-        
+        List<GameObject> gameObjects;
+
         public Room(uint id, Client player1)
         {
             this.id = id;
             players = new Client[MAX_NUM_OF_PLAYER];
             players[0] = player1;
-            numOfPlayer = 1;    
+            numOfPlayer = 1;
+            gameObjects = new List<GameObject>();
+
         }
 
         public Room(uint id)
@@ -55,6 +58,14 @@ namespace ServerProjectInfiniteRunner
             players[NumOfPlayer] = player;
             numOfPlayer++;
             return true;
+        }
+
+        public void Process()
+        {
+            foreach (GameObject gameObject in gameObjects)
+            {
+                gameObject.Tick();
+            }
         }
     }
 }
