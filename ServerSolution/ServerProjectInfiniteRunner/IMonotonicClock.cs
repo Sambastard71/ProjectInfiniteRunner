@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner
-{
-    interface IUpdatable
+{ 
+    public interface IMonotonicClock
     {
-         void Update();
+        float GetNow();
+        float GetDeltaTime();
     }
+    
 }

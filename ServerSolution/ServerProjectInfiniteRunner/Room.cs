@@ -10,6 +10,17 @@ namespace ServerProjectInfiniteRunner
     {
         const int MAX_NUM_OF_PLAYER = 2;
 
+        private bool IsStartLoading = true;
+
+        private Server serverOwner;
+        public Server Server
+        {
+            get
+            {
+                return serverOwner;
+            }
+        }
+
         uint id;
         public uint ID
         {
@@ -29,23 +40,16 @@ namespace ServerProjectInfiniteRunner
         }
         
         Client[] players;
-        List<GameObject> gameObjects;
+        
 
-        public Room(uint id, Client player1)
+
+        public Room(uint id, Server server)
         {
-            this.id = id;
-            players = new Client[MAX_NUM_OF_PLAYER];
-            players[0] = player1;
-            numOfPlayer = 1;
-            gameObjects = new List<GameObject>();
-
-        }
-
-        public Room(uint id)
-        {
+            serverOwner = server;
             this.id = id;
             players = new Client[MAX_NUM_OF_PLAYER];
             numOfPlayer = 0;
+       
         }
 
         public bool AddPlayer(Client player)
@@ -62,9 +66,26 @@ namespace ServerProjectInfiniteRunner
 
         public void Process()
         {
-            foreach (GameObject gameObject in gameObjects)
+            if(IsStartLoading)
             {
-                gameObject.Tick();
+                foreach(Client client in players)
+                {
+                    client.Avatar.ownerRoom = this;
+                    SpawnManager.AddItem(client.Avatar);
+                }
+
+                SpawnManager.Spawn();
+                IsStartLoading = false;
+            }
+
+            UpdateManager.Update();
+        }
+
+        public void SendToAllClients(Packet packet)
+        {
+            foreach (Client client in players)
+            {
+                client.Enqueue(packet);
             }
         }
     }

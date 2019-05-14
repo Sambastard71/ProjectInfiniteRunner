@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner
 {
-    interface IUpdatable
+    interface ISpawnable
     {
-         void Update();
+        void Spawn();
     }
 }

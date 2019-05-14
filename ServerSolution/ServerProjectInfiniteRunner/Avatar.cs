@@ -1,23 +1,27 @@
 ﻿using System;
 namespace ServerProjectInfiniteRunner
 {
-    public class Avatar : GameObject
+    public class Avatar : GameObject,IUpdatable, ISpawnable
     {
-        private Client owner;
 
-        public bool IsOwnedBy(Client client)
+        public Avatar(uint objectType):base(objectType)
         {
-            return owner == client;
+            UpdateManager.AddItem(this);
+            SpawnManager.AddItem(this);
         }
 
-        public Avatar(uint objectType, Client owner):base(objectType)
+        public override void Update()
         {
+            base.Update();
+            Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, XPos, YPos, ZPos);
+            //Send to all clients in room
         }
 
-        public override void Tick()
+        public void Spawn()
         {
-            Packet packet = new Packet(Server.COMMAND_UPDATE, Id, RoomId, X, Y, Z);
-            // to implement: Server.SendToAllClients(packet);
+            Packet packet = new Packet(Server.COMMAND_SPAWN, Id, ownerRoom.ID, XPos, YPos, ZPos);
+
+            //Send to all clients in room
         }
     }
 }

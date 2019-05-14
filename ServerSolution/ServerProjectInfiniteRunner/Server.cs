@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
+using System.Diagnostics;
+
 
 namespace ServerProjectInfiniteRunner
 {
@@ -16,7 +18,7 @@ namespace ServerProjectInfiniteRunner
         const int MAX_ROOM = 32;
 
         //Command List To Update
-        public const int COMMAND_FAST_JOIN = 0;
+        
         public const int COMMAND_JOIN = 1;
         public const int COMMAND_UPDATE = 2;
         public const int COMMAND_SPAWN = 3;
@@ -25,10 +27,17 @@ namespace ServerProjectInfiniteRunner
         public const int COMMAND_WELCOME = 5;
 
         ITransport transport;
+        IMonotonicClock clock;
         command[] commands;
 
         //List of clients in connected
         List<Client> clients;
+
+        
+        public IMonotonicClock CurrentClock
+        {
+            get { return clock; }
+        }
 
         public int numOfClients
         {
@@ -69,23 +78,27 @@ namespace ServerProjectInfiniteRunner
         {
             this.transport = transport;
 
+            clock = new GameClock();
+
             commands = new command[COMMAND_SPAWN + 1];
-            commands[COMMAND_FAST_JOIN] = Join;
+            
             commands[COMMAND_JOIN] = Join;
-            commands[COMMAND_UPDATE] = Update;
-            commands[COMMAND_SPAWN] = Spawn;
+            
 
             clients = new List<Client>();
             rooms = new List<Room>();
-            rooms.Add(new Room((uint)rooms.Count));
+            
         }
 
         public void Start()
         {
             while (true)
             {
+                Console.WriteLine(clock.GetDeltaTime());
                 SingleStep();
             }
+
+            
         }
 
         //Dispatcher that recive packet and call every right command
@@ -106,6 +119,7 @@ namespace ServerProjectInfiniteRunner
 
             commands[data[0]](data, sender);
 
+            //if Game in a room is starting do this
             foreach (Room room in Rooms)
             {
                 room.Process();
@@ -147,61 +161,88 @@ namespace ServerProjectInfiniteRunner
             clients.Add(c);
 
             //Check for empty room
-            bool playerJoined = false;
-            uint roomId = uint.MaxValue;
-            int idInRoom = 2;
+            uint roomId = (uint)numOfRooms;
+            uint IdinRoom = 0;
 
-            if (packet[0] == COMMAND_FAST_JOIN)
+            if (packet[0] == COMMAND_JOIN)
             {
-                foreach (Room room in Rooms)
+                if(numOfRooms==0)
                 {
-                    if (room.NumOfPlayer <= 1)
+                    Room room = new Room(roomId, this);
+                    Rooms.Add(room);
+                    room.AddPlayer(c);
+                    IdinRoom = (uint)room.NumOfPlayer;
+
+                    Packet welcome = new Packet(COMMAND_WELCOME, roomId, IdinRoom);
+                    c.Enqueue(welcome);
+                }
+
+                if(numOfRooms>=1)
+                {
+                    if(rooms[numOfRooms-1].NumOfPlayer==1)
                     {
-                        playerJoined = room.AddPlayer(c);
-                        roomId = room.ID;
-                        playerJoined = true;
+                        rooms[numOfRooms-1].AddPlayer(c);
+                        IdinRoom = (uint)rooms[numOfRooms - 1].NumOfPlayer;
+
+                        Packet welcome = new Packet(COMMAND_WELCOME, roomId, IdinRoom);
+                        c.Enqueue(welcome);
+                    }
+                    else if(rooms[numOfRooms-1].NumOfPlayer==2)
+                    {
+                        Room room = new Room(roomId, this);
+                        Rooms.Add(room);
+                        room.AddPlayer(c);
+                        IdinRoom = (uint)room.NumOfPlayer;
+
+                        Packet welcome = new Packet(COMMAND_WELCOME, roomId, IdinRoom);
+                        c.Enqueue(welcome);
                     }
                 }
+
+                
+                //foreach (Room room in Rooms)
+                //{
+                //    if (room.NumOfPlayer <= 1)
+                //    {
+                //        playerJoined = room.AddPlayer(c);
+                //        roomId = room.ID;
+                //        playerJoined = true;
+                //    }
+                //}
 
             }
 
             //if there isn't an empty room create it and add the client to it
-            if (!playerJoined || packet[0] == COMMAND_JOIN)
-            {
-                Room r = null;
-                if (rooms.Count < MAX_ROOM)
-                {
-                    r = new Room((uint)rooms.Count, c);
-                    idInRoom = 1;
-                }
-                else
-                {
-                    Packet error = new Packet(COMMAND_ERROR, "Max number of room reached try to reconnect");
-                    transport.Send(error.GetData(), endPoint);
-                    return;
-                }
+            //if (!playerJoined || packet[0] == COMMAND_JOIN)
+            //{
+            //    Room r = null;
+            //    if (rooms.Count < MAX_ROOM)
+            //    {
+            //        r = new Room((uint)rooms.Count, c,this);
+            //        idInRoom = 1;
+            //    }
+            //    else
+            //    {
+            //        Packet error = new Packet(COMMAND_ERROR, "Max number of room reached try to reconnect");
+            //        transport.Send(error.GetData(), endPoint);
+            //        return;
+            //    }
 
-                if (r != null)
-                {
-                    rooms.Add(r);
-                    roomId = r.ID;
-                }
-            }
+            //    if (r != null)
+            //    {
+            //        rooms.Add(r);
+            //        roomId = r.ID;
+            //    }
+            //}
 
 
-            //TODO make welcomePacket and send it
-            Packet welcome = new Packet(COMMAND_WELCOME, roomId, idInRoom);
+            ////TODO make welcomePacket and send it
+           
 
-            transport.Send(welcome.GetData(), endPoint);
+            //transport.Send(welcome.GetData(), endPoint);
         }
         
-        public void Update(byte[] packet, EndPoint endPoint)
-        {
-        }
-
-        public void Spawn(byte[] packet, EndPoint endPoint)
-        {
-        }
+        
 
     }
 }
