@@ -11,6 +11,10 @@ namespace ServerProjectInfiniteRunner
         public float YVel;
         public float ZVel;
 
+        public float Width;
+        public float Height;
+
+        public bool IsActive;
 
         private uint internalObjectType;
         public uint ObjectType
@@ -62,6 +66,11 @@ namespace ServerProjectInfiniteRunner
             XPos += XVel;
             YPos += YVel;
             ZPos += ZVel;
+
+        }
+
+        public virtual void OnCollide(Collision collisionInfo)
+        {
 
         }
     }

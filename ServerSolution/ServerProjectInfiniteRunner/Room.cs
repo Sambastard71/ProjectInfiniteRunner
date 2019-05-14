@@ -66,7 +66,12 @@ namespace ServerProjectInfiniteRunner
 
         public void Process()
         {
-            if(IsStartLoading)
+            foreach (Client client in players)
+            {
+                client.Process();
+            }
+
+            if (IsStartLoading)
             {
                 foreach(Client client in players)
                 {
@@ -75,8 +80,14 @@ namespace ServerProjectInfiniteRunner
                 }
 
                 SpawnManager.Spawn();
+                SpawnManager.RemoveAll();
                 IsStartLoading = false;
+
             }
+
+            //spawn of obstacles
+
+            UpdateManager.CheckCollisions();
 
             UpdateManager.Update();
         }

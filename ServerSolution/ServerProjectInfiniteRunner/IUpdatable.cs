@@ -6,8 +6,21 @@ using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner
 {
-    interface IUpdatable
+    public interface IUpdatable
     {
-         void Update();
+        bool GetIsCollisionAffected();
+        void SetIsCollisionAffected(bool boolean);
+
+        bool GetIsActive();
+        void SetIsActive(bool boolean);
+
+        uint GetRoomId();
+
+        bool CheckCollisionWith(Collider2D collider);
+        Collider2D GetCollider();
+
+        GameObject GetGameObject();
+
+        void Update();
     }
 }
