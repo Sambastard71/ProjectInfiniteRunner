@@ -63,9 +63,9 @@ namespace ServerProjectInfiniteRunner
 
         public virtual void Update()
         {
-            XPos += XVel;
-            YPos += YVel;
-            ZPos += ZVel;
+            XPos += XVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
+            YPos += YVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
+            ZPos += ZVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
 
         }
 

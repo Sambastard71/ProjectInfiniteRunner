@@ -39,7 +39,12 @@ namespace ServerProjectInfiniteRunner
             }
         }
         
-        Client[] players;
+        private Client[] players;
+
+        public  Client[]Players
+        {
+            get { return players; }
+        }
         
 
 
