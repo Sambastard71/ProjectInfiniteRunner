@@ -120,9 +120,14 @@ namespace ServerProjectInfiniteRunner
 
             if (data == null)
             {
-                //TODO Add Malus to Client
+                Client c = new Client(sender, this);
+
+                 c.malus-= 5;
+
                 return;
             }
+
+            CheckMalus();
 
             commands[data[0]](data, sender);
 
@@ -139,6 +144,18 @@ namespace ServerProjectInfiniteRunner
             return transport.Send(packet, endPoint);
         }
 
+        private void CheckMalus()
+        {
+            foreach (Client client in clients)
+            {
+                if(client.malus<=-50)
+                {
+                    clients.Remove(client);
+                    Console.WriteLine("Client kicked out");
+                }
+            }
+        }
+
 
         //TODO
         //Make The commands
@@ -148,19 +165,22 @@ namespace ServerProjectInfiniteRunner
         //Join Method For Quick Game && Classic Game
         private void Join(byte[] packet, EndPoint endPoint)
         {
+            Client c = new Client(endPoint, this);
             //Check the lenght of the join packet
+
             if (packet.Length > 1)
             {
-                //TODO Add Malus To Client
+                c.malus -= 20;
+
                 return;
             }
 
-            Client c = new Client(endPoint, this);
 
             //Check if the client is already joined
             if (clients.Exists(client => client.EndPoint.Equals(c.EndPoint)))
             {
-                //TODO add Malus to the client
+                c.malus -= 10;
+
                 return;
             }
 
@@ -281,13 +301,15 @@ namespace ServerProjectInfiniteRunner
                 }
                 else
                 {
-                    //TODO add Malus to the client
+                    c.malus -= 10;
+
 
                 }
             }
             else
             {
-                //TODO add Malus to the client
+                c.malus -= 20;
+
             }
         }
 
@@ -313,13 +335,14 @@ namespace ServerProjectInfiniteRunner
                 }
                 else
                 {
-                    //TODO add Malus to the client
+                    c.malus -= 10;
 
                 }
             }
             else
             {
-                //TODO add Malus to the client
+                c.malus -= 20;
+
             }
         }
 

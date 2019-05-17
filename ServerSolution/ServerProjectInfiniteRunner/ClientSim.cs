@@ -15,6 +15,7 @@ namespace ServerProjectInfiniteRunner
             get { return avatar; }
         }
 
+        public float malus = 0;
 
         private EndPoint endPoint;
         public EndPoint EndPoint
