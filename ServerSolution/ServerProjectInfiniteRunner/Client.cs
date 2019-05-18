@@ -9,14 +9,6 @@ namespace ServerProjectInfiniteRunner
 {
     public class Client
     {
-        private Avatar avatar;
-        public Avatar Avatar
-        {
-            get { return avatar; }
-        }
-
-        public float malus = 0;
-
         private EndPoint endPoint;
         public EndPoint EndPoint
         {
@@ -30,25 +22,13 @@ namespace ServerProjectInfiniteRunner
         private Dictionary<uint, Packet> waitingForAck;
 
         private Server connectedServer;
-        private static int numberOfPlayer;
-
-        private int id;
-        public int ID
-        {
-            get
-            {
-                return id;
-            }
-        }
 
         public Client(EndPoint endPoint, Server server)
         {
-            this.endPoint = endPoint;    
+            this.endPoint = endPoint;
             this.connectedServer = server;
             sendQueue = new Queue<Packet>();
             waitingForAck = new Dictionary<uint, Packet>();
-            id = numberOfPlayer++;
-            avatar = new Avatar(1);
         }
 
         public void Process()
@@ -99,11 +79,6 @@ namespace ServerProjectInfiniteRunner
             {
                 waitingForAck.Remove(id);
             }
-        }
-
-        public void Enqueue(Packet packet)
-        {
-            sendQueue.Enqueue(packet);
         }
     }
 }

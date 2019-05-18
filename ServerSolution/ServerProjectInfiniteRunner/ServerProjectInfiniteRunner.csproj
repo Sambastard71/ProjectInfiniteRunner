@@ -48,14 +48,26 @@
   <ItemGroup>
     <Compile Include="Avatar.cs" />
     <Compile Include="ClientSim.cs" />
+<<<<<<< HEAD
     <Compile Include="GameObject.cs" />
+=======
+    <Compile Include="Collider2D.cs" />
+    <Compile Include="Collision.cs" />
+    <Compile Include="GameClock.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="IMonotonicClock.cs" />
+    <Compile Include="ISpawnable.cs" />
+>>>>>>> c839c5be7f1f1b8f35250e734b8415cddd600a3f
     <Compile Include="ITransport.cs" />
+    <Compile Include="IUpdatable.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="SpawnManager.cs" />
     <Compile Include="TransportIPv4.cs" />
+    <Compile Include="UpdateManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

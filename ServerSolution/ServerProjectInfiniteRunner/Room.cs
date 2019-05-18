@@ -10,6 +10,17 @@ namespace ServerProjectInfiniteRunner
     {
         const int MAX_NUM_OF_PLAYER = 2;
 
+        private bool IsStartLoading = true;
+
+        private Server serverOwner;
+        public Server Server
+        {
+            get
+            {
+                return serverOwner;
+            }
+        }
+
         uint id;
         public uint ID
         {
@@ -28,24 +39,22 @@ namespace ServerProjectInfiniteRunner
             }
         }
         
-        Client[] players;
-        List<GameObject> gameObjects;
+        private Client[] players;
 
-        public Room(uint id, Client player1)
+        public  Client[]Players
         {
-            this.id = id;
-            players = new Client[MAX_NUM_OF_PLAYER];
-            players[0] = player1;
-            numOfPlayer = 1;
-            gameObjects = new List<GameObject>();
-
+            get { return players; }
         }
+        
 
-        public Room(uint id)
+
+        public Room(uint id, Server server)
         {
+            serverOwner = server;
             this.id = id;
             players = new Client[MAX_NUM_OF_PLAYER];
             numOfPlayer = 0;
+       
         }
 
         public bool AddPlayer(Client player)
@@ -62,9 +71,37 @@ namespace ServerProjectInfiniteRunner
 
         public void Process()
         {
-            foreach (GameObject gameObject in gameObjects)
+            foreach (Client client in players)
             {
-                gameObject.Tick();
+                client.Process();
+            }
+
+            if (IsStartLoading)
+            {
+                foreach(Client client in players)
+                {
+                    client.Avatar.ownerRoom = this;
+                    SpawnManager.AddItem(client.Avatar);
+                }
+
+                SpawnManager.Spawn();
+                SpawnManager.RemoveAll();
+                IsStartLoading = false;
+
+            }
+
+            //spawn of obstacles
+
+            UpdateManager.CheckCollisions();
+
+            UpdateManager.Update();
+        }
+
+        public void SendToAllClients(Packet packet)
+        {
+            foreach (Client client in players)
+            {
+                client.Enqueue(packet);
             }
         }
     }

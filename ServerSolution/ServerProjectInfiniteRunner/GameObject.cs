@@ -3,11 +3,18 @@ namespace ServerProjectInfiniteRunner
 {
     public abstract class GameObject
     {
-        public float X;
-        public float Y;
-        public float Z;
+        public float XPos;
+        public float YPos;
+        public float ZPos;
 
-        
+        public float XVel;
+        public float YVel;
+        public float ZVel;
+
+        public float Width;
+        public float Height;
+
+        public bool IsActive;
 
         private uint internalObjectType;
         public uint ObjectType
@@ -29,31 +36,40 @@ namespace ServerProjectInfiniteRunner
             }
         }
 
-        private uint roomId;
-        public uint RoomId
-        {
-            get
-            {
-                return roomId;
-            }
-        }
+        public Room ownerRoom;
+        
 
         public GameObject(uint objectType)
         {
             internalObjectType = objectType;
             internalId = ++gameObjectCounter;
-            //add roomId
+            
             //add Gameobject in room      
         }
 
         public void SetPosition(float x, float y, float z)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            XPos = x;
+            YPos = y;
+            ZPos = z;
         }
 
-        public virtual void Tick()
+        public void SetVelocity(float x, float y, float z)
+        {
+            XVel = x;
+            YVel = y;
+            ZVel = z;
+        }
+
+        public virtual void Update()
+        {
+            XPos += XVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
+            YPos += YVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
+            ZPos += ZVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
+
+        }
+
+        public virtual void OnCollide(Collision collisionInfo)
         {
 
         }
