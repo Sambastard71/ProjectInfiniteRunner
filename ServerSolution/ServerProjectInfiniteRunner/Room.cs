@@ -41,7 +41,7 @@ namespace ServerProjectInfiniteRunner
         
         private Client[] players;
 
-        public  Client[]Players
+        public  Client[] Players
         {
             get { return players; }
         }
@@ -52,7 +52,7 @@ namespace ServerProjectInfiniteRunner
         {
             serverOwner = server;
             this.id = id;
-            players = new Client[MAX_NUM_OF_PLAYER];
+            players = new Client[2];
             numOfPlayer = 0;
        
         }
@@ -66,6 +66,7 @@ namespace ServerProjectInfiniteRunner
 
             players[NumOfPlayer] = player;
             numOfPlayer++;
+            player.SetRoom(this);
             return true;
         }
 
@@ -73,6 +74,7 @@ namespace ServerProjectInfiniteRunner
         {
             foreach (Client client in players)
             {
+                if(client!=null)
                 client.Process();
             }
 
@@ -80,8 +82,8 @@ namespace ServerProjectInfiniteRunner
             {
                 foreach(Client client in players)
                 {
-                    client.Avatar.ownerRoom = this;
-                    SpawnManager.AddItem(client.Avatar);
+                    
+                    
                 }
 
                 SpawnManager.Spawn();
@@ -90,6 +92,7 @@ namespace ServerProjectInfiniteRunner
 
             }
 
+            CheckMalus();
             //spawn of obstacles
 
             UpdateManager.CheckCollisions();
@@ -102,6 +105,20 @@ namespace ServerProjectInfiniteRunner
             foreach (Client client in players)
             {
                 client.Enqueue(packet);
+            }
+        }
+
+        private void CheckMalus()
+        {
+            foreach (Client client in players)
+            {
+                if (client!=null && client.malus <= -50)
+                {
+                    int Id = client.ID;
+                    players[Id] = null;
+                    Console.WriteLine("Client kicked out");
+                    numOfPlayer--;
+                }
             }
         }
     }

@@ -22,12 +22,12 @@ namespace ServerProjectInfiniteRunner
         public const int COMMAND_JOIN = 1;
         public const int COMMAND_UPDATE = 2;
         public const int COMMAND_SPAWN = 3;
+        public const int COMMAND_ERROR = 4;
+        public const int COMMAND_WELCOME = 5;
         public const int COMMAND_SETUP = 6;
         public const int COMMAND_INTANGIBLE = 7;
 
 
-        public const int COMMAND_ERROR = 4;
-        public const int COMMAND_WELCOME = 5;
 
         ITransport transport;
         IMonotonicClock clock;
@@ -36,26 +36,14 @@ namespace ServerProjectInfiniteRunner
         //List of clients in connected
         List<Client> clients;
 
-        
+        public int numOfClients
+        {
+            get { return clients.Count; }
+        }
+
         public IMonotonicClock CurrentClock
         {
             get { return clock; }
-        }
-
-        public int numOfClients
-        {
-            get
-            {
-                return clients.Count;
-            }
-        }
-
-        public List<Client> Clients
-        {
-            get
-            {
-                return clients;
-            }
         }
 
         //List of actual active rooms
@@ -83,35 +71,37 @@ namespace ServerProjectInfiniteRunner
 
             clock = new GameClock();
 
-            commands = new command[COMMAND_SPAWN];
-            
+            commands = new command[8];
+
             commands[COMMAND_JOIN] = Join;
             commands[COMMAND_SETUP] = SetUp;
             commands[COMMAND_INTANGIBLE] = Intangible;
 
-
-
-
             clients = new List<Client>();
+
+
+
             rooms = new List<Room>();
-            
+
+
+
         }
 
         public void Start()
         {
             while (true)
             {
-                Console.WriteLine(clock.GetDeltaTime());
+
                 SingleStep();
             }
 
-            
+
         }
 
         //Dispatcher that recive packet and call every right command
         //TODO
         //Add Malus To Client who try to send empty packet
-        
+
         public void SingleStep()
         {
 
@@ -120,14 +110,14 @@ namespace ServerProjectInfiniteRunner
 
             if (data == null)
             {
-                Client c = new Client(sender, this);
 
-                 c.malus-= 5;
+
+
 
                 return;
             }
 
-            CheckMalus();
+
 
             commands[data[0]](data, sender);
 
@@ -144,17 +134,7 @@ namespace ServerProjectInfiniteRunner
             return transport.Send(packet, endPoint);
         }
 
-        private void CheckMalus()
-        {
-            foreach (Client client in clients)
-            {
-                if(client.malus<=-50)
-                {
-                    clients.Remove(client);
-                    Console.WriteLine("Client kicked out");
-                }
-            }
-        }
+
 
 
         //TODO
@@ -166,20 +146,21 @@ namespace ServerProjectInfiniteRunner
         private void Join(byte[] packet, EndPoint endPoint)
         {
             Client c = new Client(endPoint, this);
-            //Check the lenght of the join packet
-
-            if (packet.Length > 1)
-            {
-                c.malus -= 20;
-
-                return;
-            }
 
 
             //Check if the client is already joined
-            if (clients.Exists(client => client.EndPoint.Equals(c.EndPoint)))
+            if (packet.Length > 1 || clients.Exists(client => client.EndPoint.Equals(c.EndPoint)))
             {
-                c.malus -= 10;
+                foreach (Client client in clients)
+                {
+                    if (client.EndPoint.Equals(c.EndPoint))
+                    {
+                        client.malus -= 10;
+                    }
+                }
+
+                c.Destroy();
+                clients.Remove(c);
 
                 return;
             }
@@ -189,84 +170,49 @@ namespace ServerProjectInfiniteRunner
 
             //Check for empty room
             uint roomId = (uint)numOfRooms;
-            uint IdinRoom = 0;
+            uint IdinRoom;
 
-            if (packet[0] == COMMAND_JOIN)
+            if (numOfRooms == 0)
             {
-                if (numOfRooms == 0)
+                Room room = new Room(roomId, this);
+                Rooms.Add(room);
+                room.AddPlayer(c);
+
+                IdinRoom = (uint)room.NumOfPlayer;
+
+                Packet welcome = new Packet(COMMAND_WELCOME, roomId, IdinRoom);
+                c.Enqueue(welcome);
+
+                return;
+            }
+
+            if (numOfRooms >= 1)
+            {
+                if (rooms[numOfRooms - 1].NumOfPlayer == 1)
+                {
+                    rooms[numOfRooms - 1].AddPlayer(c);
+
+
+                    IdinRoom = (uint)rooms[numOfRooms - 1].NumOfPlayer;
+
+                    Packet welcome = new Packet(COMMAND_WELCOME, IdinRoom, roomId);
+                    c.Enqueue(welcome);
+                }
+                else if (rooms[numOfRooms - 1].NumOfPlayer == 2)
                 {
                     Room room = new Room(roomId, this);
+
+
                     Rooms.Add(room);
                     room.AddPlayer(c);
                     IdinRoom = (uint)room.NumOfPlayer;
 
-                    Packet welcome = new Packet(COMMAND_WELCOME, roomId, IdinRoom);
+                    Packet welcome = new Packet(COMMAND_WELCOME, IdinRoom, roomId);
                     c.Enqueue(welcome);
                 }
-
-                if (numOfRooms >= 1)
-                {
-                    if (rooms[numOfRooms - 1].NumOfPlayer == 1)
-                    {
-                        rooms[numOfRooms - 1].AddPlayer(c);
-                        IdinRoom = (uint)rooms[numOfRooms - 1].NumOfPlayer;
-
-                        Packet welcome = new Packet(COMMAND_WELCOME, IdinRoom, roomId);
-                        c.Enqueue(welcome);
-                    }
-                    else if (rooms[numOfRooms - 1].NumOfPlayer == 2)
-                    {
-                        Room room = new Room(roomId, this);
-                        Rooms.Add(room);
-                        room.AddPlayer(c);
-                        IdinRoom = (uint)room.NumOfPlayer;
-
-                        Packet welcome = new Packet(COMMAND_WELCOME, IdinRoom, roomId);
-                        c.Enqueue(welcome);
-                    }
-                }
-
-
-                //foreach (Room room in Rooms)
-                //{
-                //    if (room.NumOfPlayer <= 1)
-                //    {
-                //        playerJoined = room.AddPlayer(c);
-                //        roomId = room.ID;
-                //        playerJoined = true;
-                //    }
-                //}
-
             }
-
-            //if there isn't an empty room create it and add the client to it
-            //if (!playerJoined || packet[0] == COMMAND_JOIN)
-            //{
-            //    Room r = null;
-            //    if (rooms.Count < MAX_ROOM)
-            //    {
-            //        r = new Room((uint)rooms.Count, c,this);
-            //        idInRoom = 1;
-            //    }
-            //    else
-            //    {
-            //        Packet error = new Packet(COMMAND_ERROR, "Max number of room reached try to reconnect");
-            //        transport.Send(error.GetData(), endPoint);
-            //        return;
-            //    }
-
-            //    if (r != null)
-            //    {
-            //        rooms.Add(r);
-            //        roomId = r.ID;
-            //    }
-            //}
-
-
-            ////TODO make welcomePacket and send it
-
-
-            //transport.Send(welcome.GetData(), endPoint);
+            
+            Console.WriteLine("client {0} joined with avatar {1}", c.ID, c.Avatar.Id);
         }
 
 
@@ -301,14 +247,26 @@ namespace ServerProjectInfiniteRunner
                 }
                 else
                 {
-                    c.malus -= 10;
+                    foreach (Client client in clients)
+                    {
+                        if (client.EndPoint.Equals(c.EndPoint))
+                        {
+                            client.malus -= 10;
+                        }
+                    }
 
 
                 }
             }
             else
             {
-                c.malus -= 20;
+                foreach (Client client in clients)
+                {
+                    if (client.EndPoint.Equals(c.EndPoint))
+                    {
+                        client.malus -= 20;
+                    }
+                }
 
             }
         }
@@ -323,7 +281,7 @@ namespace ServerProjectInfiniteRunner
             {
                 uint idPersonaggio = BitConverter.ToUInt32(packet, 1);
                 uint idRoom = BitConverter.ToUInt32(packet, 5);
-                
+
 
                 //check if client exist
                 if (clients.Exists(client => client.EndPoint.Equals(c.EndPoint)))
@@ -335,17 +293,31 @@ namespace ServerProjectInfiniteRunner
                 }
                 else
                 {
-                    c.malus -= 10;
+                    foreach (Client client in clients)
+                    {
+                        if (client.EndPoint.Equals(c.EndPoint))
+                        {
+                            client.malus -= 10;
+                        }
+                    }
 
                 }
             }
             else
             {
-                c.malus -= 20;
+                foreach (Client client in clients)
+                {
+                    if (client.EndPoint.Equals(c.EndPoint))
+                    {
+                        client.malus -= 20;
+                    }
+                }
 
             }
         }
 
+
+        //comando player2 connected (comando, id nella stanza, id room, posx,posy,posx, width, heigth )
 
     }
 }

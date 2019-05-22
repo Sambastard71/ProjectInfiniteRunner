@@ -15,6 +15,12 @@ namespace ServerProjectInfiniteRunner
             get { return avatar; }
         }
 
+        private Room ownerRoom;
+        public Room OwnerRoom
+        {
+            get { return ownerRoom; }
+        }
+
         public float malus = 0;
 
         private EndPoint endPoint;
@@ -28,6 +34,8 @@ namespace ServerProjectInfiniteRunner
         private Queue<Packet> sendQueue;
 
         private Dictionary<uint, Packet> waitingForAck;
+
+
 
         private Server connectedServer;
         private static int numberOfPlayer;
@@ -43,12 +51,13 @@ namespace ServerProjectInfiniteRunner
 
         public Client(EndPoint endPoint, Server server)
         {
-            this.endPoint = endPoint;    
+            this.endPoint = endPoint;
             this.connectedServer = server;
+
             sendQueue = new Queue<Packet>();
             waitingForAck = new Dictionary<uint, Packet>();
             id = numberOfPlayer++;
-            avatar = new Avatar(1);
+            avatar = new Avatar(1, ownerRoom);
         }
 
         public void Process()
@@ -91,6 +100,8 @@ namespace ServerProjectInfiniteRunner
             {
                 waitingForAck.Remove(packetId);
             }
+
+            
         }
 
         public void CheckAck(uint id)
@@ -104,6 +115,16 @@ namespace ServerProjectInfiniteRunner
         public void Enqueue(Packet packet)
         {
             sendQueue.Enqueue(packet);
+        }
+
+        public void SetRoom(Room room)
+        {
+            ownerRoom = room;
+        }
+
+        public void Destroy()
+        {
+            avatar.Destroy();
         }
     }
 }
