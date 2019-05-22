@@ -17,12 +17,13 @@ public class Client : MonoBehaviour
     public int MyPort;
 
     const int COMMAND_WELCOME = 2;
+    const int COMMAND_P_CONNECTED = 3;
     command[] commands;
 
-    Socket socket;
+    static Socket socket;
     IPEndPoint myEndPoint;
-    IPEndPoint serverEndPoint;
-    public IPEndPoint ServerEndPoint
+    static IPEndPoint serverEndPoint;
+    public static IPEndPoint ServerEndPoint
     {
         get
         {
@@ -31,13 +32,17 @@ public class Client : MonoBehaviour
     }
 
     SceneManagement sceneManagement;
-    PlayerDetail playerDetail;
+    public PlayerDetails MinePlayer;
+    public PlayerDetails OtherPlayer;
+    public RoomDetails RoomDetails;
 
     private void OnEnable()
     {
         sceneManagement = GetComponent<SceneManagement>();
-        playerDetail = GetComponent<PlayerDetail>();
-        
+        MinePlayer.ResetElement();
+        OtherPlayer.ResetElement();
+        RoomDetails.ResetElement();
+
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.Blocking = false;
         myEndPoint = new IPEndPoint(IPAddress.Parse(MyAddres), MyPort);
@@ -46,8 +51,10 @@ public class Client : MonoBehaviour
         serverEndPoint = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort);
 
         DontDestroyOnLoad(this.gameObject);
-        commands = new command[COMMAND_WELCOME + 1];
+        commands = new command[COMMAND_P_CONNECTED + 1];
         commands[COMMAND_WELCOME] = Welcome;
+        commands[COMMAND_P_CONNECTED] = OtherPlayerConnected;
+
     }
 
     private void Update()
@@ -65,12 +72,12 @@ public class Client : MonoBehaviour
     }
 
 
-    public bool Send(byte[] data, EndPoint endpoint)
+    public static bool Send(byte[] data)
     {
         bool success = false;
         try
         {
-            int rlen = socket.SendTo(data, endpoint);
+            int rlen = socket.SendTo(data, ServerEndPoint);
             if (rlen == data.Length)
                 success = true;
         }
@@ -109,12 +116,39 @@ public class Client : MonoBehaviour
 
         sceneManagement.LoadGameScene();
 
-        playerDetail.MyIdInRoom = BitConverter.ToUInt32(data, 1);
-        playerDetail.RoomId = BitConverter.ToUInt32(data, 5);
+        MinePlayer.MyIdInRoom = BitConverter.ToUInt32(data, 1);
+        MinePlayer.RoomId = BitConverter.ToUInt32(data, 5);
 
-        Debug.Log(playerDetail.MyIdInRoom);
-        Debug.Log(playerDetail.RoomId);
+        RoomDetails.RoomID = MinePlayer.RoomId;
 
+        RoomDetails.AddPlayerRoom(true);
+
+        Debug.Log(MinePlayer.MyIdInRoom);
+        Debug.Log(MinePlayer.RoomId);
+
+
+    }
+    
+    // (command, player2Id, roomId)
+    void OtherPlayerConnected(byte[] data, EndPoint sender)
+    {
+        if (data.Length > 9)
+        {
+            return;
+        }
+        
+        if (RoomDetails.RoomID != BitConverter.ToUInt32(data, 5))
+        {
+            return;
+        }
+
+        OtherPlayer.MyIdInRoom = BitConverter.ToUInt32(data, 1);
+        OtherPlayer.RoomId = BitConverter.ToUInt32(data, 5);
+
+        RoomDetails.AddPlayerRoom(true);
+        
+        Debug.Log(OtherPlayer.MyIdInRoom);
+        Debug.Log(OtherPlayer.RoomId);
 
     }
 
