@@ -7,10 +7,33 @@ public class RoomDetails : ScriptableObject
 {
     [SerializeField]
     uint roomID;
+
+    [SerializeField]
     int playerInRoom;
 
+    [SerializeField]
     bool player1IsReady;
+
+    [SerializeField]
     bool player2IsReady;
+
+    [SerializeField]
+    bool gameIsStarted;
+
+    [SerializeField]
+    float countdownToPlay;
+
+    public bool GameIsStarted
+    {
+        get { return gameIsStarted; }
+        set { gameIsStarted = value; }
+    }
+
+    public float CountdownToPlay
+    {
+        get { return countdownToPlay; }
+        set { countdownToPlay = value; }
+    }
 
     public int GetPlayerInRoom()
     {

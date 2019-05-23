@@ -16,9 +16,9 @@ public class LobbyControl : MonoBehaviour
 
     public PlayerDetails MinePlayer;
 
-    float AlphaDuration;
-    float AlphaIncVal;
-    Image img;
+    public float AlphaDuration;
+    public float AlphaIncVal;
+    public Image img;
     TextMeshProUGUI textComponent;
 
     private void Start()
@@ -49,24 +49,14 @@ public class LobbyControl : MonoBehaviour
             }
         }
 
-        if (RoomDetails.PlayersAreReady)
-        {
-            img.CrossFadeAlpha(AlphaIncVal, AlphaDuration, true);
-            if (img.canvasRenderer.GetAlpha() <= 0.4f)
-            {
-                ReadyButton.SetActive(false);
-                WaitingText.SetActive(false);
-
-                this.gameObject.SetActive(false);
-            }
-        }
+        
     }
 
     // (comando,idpersonaggioNellaStanza,idRoom,xpos,ypos,zpos,width,height collider)
     public void OnClick()
     {
         
-        uint command_setup = 6;
+        byte command_setup = 6;
         uint idMinePLayer = MinePlayer.MyIdInRoom;
         uint roomId = RoomDetails.RoomID;
         float posX = MinePlayer.Position.x;

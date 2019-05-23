@@ -20,12 +20,10 @@ public class SettingSpawners : MonoBehaviour
         if (MinePlayer.MyIdInRoom == 1)
         {
             playersSpawner[0].SetPlayer(MinePlayer);
-            playersSpawner[1].SetPlayer(OtherPlayer);
         }
         else
         {
             playersSpawner[1].SetPlayer(MinePlayer);
-            playersSpawner[0].SetPlayer(OtherPlayer);
         }
     }
 }

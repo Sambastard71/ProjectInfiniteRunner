@@ -16,8 +16,12 @@ public class Client : MonoBehaviour
     public string MyAddres;
     public int MyPort;
 
-    const int COMMAND_WELCOME = 2;
-    const int COMMAND_P_CONNECTED = 3;
+    const byte COMMAND_WELCOME = 5;
+    const byte COMMAND_P_CONNECTED = 8;
+    const byte COMMAND_SETUP_OP = 9;
+    const byte COMMAND_COUNTDOWN = 10;
+
+
     command[] commands;
 
     static Socket socket;
@@ -51,9 +55,12 @@ public class Client : MonoBehaviour
         serverEndPoint = new IPEndPoint(IPAddress.Parse(ServerAddress), ServerPort);
 
         DontDestroyOnLoad(this.gameObject);
-        commands = new command[COMMAND_P_CONNECTED + 1];
+        commands = new command[20];
         commands[COMMAND_WELCOME] = Welcome;
         commands[COMMAND_P_CONNECTED] = OtherPlayerConnected;
+        commands[COMMAND_SETUP_OP] = SetUpOtherPlayer;
+        commands[COMMAND_COUNTDOWN] = Countdown;
+
 
     }
 
@@ -152,5 +159,70 @@ public class Client : MonoBehaviour
 
     }
 
+    void SetUpOtherPlayer(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 21)
+        {
+            return;
+        }
+
+        if (RoomDetails.RoomID != BitConverter.ToUInt32(data, 5))
+        {
+            return;
+        }
+
+        OtherPlayer.MyIdInRoom = BitConverter.ToUInt32(data, 1);
+        OtherPlayer.RoomId = BitConverter.ToUInt32(data, 5);
+
+        RoomDetails.AddPlayerRoom(true);
+
+        float posX = BitConverter.ToSingle(data, 9);
+        float posY = BitConverter.ToSingle(data, 13);
+        float posZ = BitConverter.ToSingle(data, 17);
+        
+
+        OtherPlayer.Position = new Vector3(posX, posY, posZ);
+
+        RoomDetails.Player2IsReady = true;
+
+        Debug.Log("OtherPlayer Setupped!");
+        
+
+    }
+
+    void Countdown(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 9)
+        {
+            return;
+        }
+
+        if (RoomDetails.RoomID != BitConverter.ToUInt32(data, 1))
+        {
+            return;
+        }
+
+        float countdownValue = BitConverter.ToUInt32(data, 5);
+
+        if (countdownValue == 3)
+        {
+            RoomDetails.CountdownToPlay = 3;
+        }
+        else if (countdownValue == 2)
+        {
+            RoomDetails.CountdownToPlay = 2;
+        }
+        else if (countdownValue == 1)
+        {
+            RoomDetails.CountdownToPlay = 1;
+        }
+        else if (countdownValue <= 0)
+        {
+            RoomDetails.CountdownToPlay = 0;
+            RoomDetails.GameIsStarted = true;
+        }
+
+
+    }
 
 }

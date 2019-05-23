@@ -11,7 +11,7 @@ public class ButtonMethods : MonoBehaviour
     public void QuickJoinButton()
     {
         packet = new byte[1];
-        packet[0] = 0;
+        packet[0] = 1;
         Client.Send(packet);
         fadeInPanel.gameObject.SetActive(true);
         fadeInPanel.FadeIn = true;
