@@ -35,7 +35,18 @@ namespace ServerProjectInfiniteRunner
 
         private Dictionary<uint, Packet> waitingForAck;
 
-
+        private bool isReady;
+        public bool IsReady
+        {
+            get
+            {
+                return isReady;
+            }
+            set
+            {
+                isReady = true;
+            }
+        }
 
         private Server connectedServer;
         private static int numberOfPlayer;
@@ -120,6 +131,7 @@ namespace ServerProjectInfiniteRunner
         public void SetRoom(Room room)
         {
             ownerRoom = room;
+            avatar.ownerRoom = room;
         }
 
         public void Destroy()

@@ -40,13 +40,12 @@ namespace ServerProjectInfiniteRunner
         }
         
         private Client[] players;
-
         public  Client[] Players
         {
             get { return players; }
         }
-        
 
+        float countDown;
 
         public Room(uint id, Server server)
         {
@@ -54,7 +53,7 @@ namespace ServerProjectInfiniteRunner
             this.id = id;
             players = new Client[2];
             numOfPlayer = 0;
-       
+            countDown = 3.666f;
         }
 
         public bool AddPlayer(Client player)
@@ -75,21 +74,31 @@ namespace ServerProjectInfiniteRunner
             foreach (Client client in players)
             {
                 if(client!=null)
-                client.Process();
+                    client.Process();
             }
 
             if (IsStartLoading)
             {
-                foreach(Client client in players)
+                if (players[0] != null && players[1] != null)
                 {
-                    
-                    
+                    //(comando, id room, countdown)
+                    if (players[0].IsReady && players[1].IsReady)
+                    {
+                        Packet countDownPacket = new Packet(Server.COMMAND_COUNTDOWN, ID, (int)countDown);
+                        countDown -= serverOwner.CurrentClock.GetDeltaTime();
+
+                        for (int i = 0; i < players.Length; i++)
+                        {
+                            serverOwner.Send(countDownPacket.GetData(), players[i].EndPoint);
+                        }
+
+                        Console.WriteLine(countDown);
+                        if (countDown <= 0)
+                        {
+                            IsStartLoading = false;
+                        }
+                    }
                 }
-
-                SpawnManager.Spawn();
-                SpawnManager.RemoveAll();
-                IsStartLoading = false;
-
             }
 
             CheckMalus();
