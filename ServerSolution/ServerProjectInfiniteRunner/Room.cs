@@ -40,21 +40,20 @@ namespace ServerProjectInfiniteRunner
         }
         
         private Client[] players;
-
-        public  Client[]Players
+        public  Client[] Players
         {
             get { return players; }
         }
-        
 
+        float countDown;
 
         public Room(uint id, Server server)
         {
             serverOwner = server;
             this.id = id;
-            players = new Client[MAX_NUM_OF_PLAYER];
+            players = new Client[2];
             numOfPlayer = 0;
-       
+            countDown = 3.666f;
         }
 
         public bool AddPlayer(Client player)
@@ -66,6 +65,7 @@ namespace ServerProjectInfiniteRunner
 
             players[NumOfPlayer] = player;
             numOfPlayer++;
+            player.SetRoom(this);
             return true;
         }
 
@@ -73,23 +73,35 @@ namespace ServerProjectInfiniteRunner
         {
             foreach (Client client in players)
             {
-                client.Process();
+                if(client!=null)
+                    client.Process();
             }
 
             if (IsStartLoading)
             {
-                foreach(Client client in players)
+                if (players[0] != null && players[1] != null)
                 {
-                    client.Avatar.ownerRoom = this;
-                    SpawnManager.AddItem(client.Avatar);
+                    //(comando, id room, countdown)
+                    if (players[0].IsReady && players[1].IsReady)
+                    {
+                        Packet countDownPacket = new Packet(Server.COMMAND_COUNTDOWN, ID, (int)countDown);
+                        countDown -= serverOwner.CurrentClock.GetDeltaTime();
+
+                        for (int i = 0; i < players.Length; i++)
+                        {
+                            serverOwner.Send(countDownPacket.GetData(), players[i].EndPoint);
+                        }
+
+                        Console.WriteLine(countDown);
+                        if (countDown <= 0)
+                        {
+                            IsStartLoading = false;
+                        }
+                    }
                 }
-
-                SpawnManager.Spawn();
-                SpawnManager.RemoveAll();
-                IsStartLoading = false;
-
             }
 
+            CheckMalus();
             //spawn of obstacles
 
             UpdateManager.CheckCollisions();
@@ -102,6 +114,20 @@ namespace ServerProjectInfiniteRunner
             foreach (Client client in players)
             {
                 client.Enqueue(packet);
+            }
+        }
+
+        private void CheckMalus()
+        {
+            foreach (Client client in players)
+            {
+                if (client!=null && client.malus <= -50)
+                {
+                    int Id = client.ID;
+                    players[Id] = null;
+                    Console.WriteLine("Client kicked out");
+                    numOfPlayer--;
+                }
             }
         }
     }

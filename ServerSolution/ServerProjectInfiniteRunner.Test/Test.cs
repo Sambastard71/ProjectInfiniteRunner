@@ -21,25 +21,14 @@ namespace ServerProjectInfiniteRunner.Test
 
 
         [Test]
-        public void TestFastJoin()
+        public void TestJoin()
         {
-            Packet join = new Packet((byte)0);
+            Packet join = new Packet((byte)1);
             transport.ClientEnqueue(join, "tester", 0);
             server.SingleStep();
             Assert.That(server.numOfClients, Is.EqualTo(1));
             Assert.That(server.Rooms.Count, Is.EqualTo(1));
 
-        }
-
-        [Test]
-        public void TestJoin()
-        {
-            Packet join = new Packet((byte)1);
-            transport.ClientEnqueue(join, "tester", 1);
-            server.SingleStep();
-
-            Assert.That(server.numOfClients, Is.EqualTo(1));
-            Assert.That(server.numOfRooms, Is.EqualTo(2));
         }
 
         [Test]

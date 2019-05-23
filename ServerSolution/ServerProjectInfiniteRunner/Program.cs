@@ -10,11 +10,13 @@ namespace ServerProjectInfiniteRunner
     {
         static void Main(string[] args)
         {
-            List<Client> clients = new List<Client>();
+            
             TransportIPv4 transport = new TransportIPv4();
-            transport.Bind("127.0.0.1", 9999);
+            GameClock gameClock = new GameClock();
 
-            Server server = new Server(transport);
+            transport.Bind("192.168.1.191", 9998);
+
+            Server server = new Server(transport, gameClock);
             server.Start();
 
         }

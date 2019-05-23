@@ -6,10 +6,14 @@ namespace ServerProjectInfiniteRunner
         Collider2D collider;
         bool isCollisionAffected;
 
-        public Avatar(uint objectType):base(objectType)
+        public Avatar(uint objectType,Room room):base(objectType,room)
         {
+            ownerRoom = room;
+
             UpdateManager.AddItem(this);
             SpawnManager.AddItem(this);
+
+            collider = new Collider2D(this);
 
             collider.CollisionType = (uint)UpdateManager.ColliderType.Player;
             collider.AddCollision((uint)UpdateManager.ColliderType.Obstacle);
@@ -24,7 +28,7 @@ namespace ServerProjectInfiniteRunner
 
         public void Spawn()
         {
-            Packet packet = new Packet(Server.COMMAND_SPAWN, Id, ObjectType ,ownerRoom.ID, XPos, YPos, ZPos);
+            //Packet packet = new Packet(Server.COMMAND_SPAWN, Id, ObjectType ,ownerRoom.ID, XPos, YPos, ZPos);
 
             //Send to all clients in room
         }
@@ -72,6 +76,14 @@ namespace ServerProjectInfiniteRunner
         public GameObject GetGameObject()
         {
             return this;
+        }
+
+        public void Destroy()
+        {
+            UpdateManager.RemoveItem(this);
+            SpawnManager.RemoveItem(this);
+
+
         }
     }
 }

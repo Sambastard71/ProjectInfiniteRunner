@@ -39,11 +39,13 @@ namespace ServerProjectInfiniteRunner
         public Room ownerRoom;
         
 
-        public GameObject(uint objectType)
+        public GameObject(uint objectType,Room ownerRoom)
         {
             internalObjectType = objectType;
             internalId = ++gameObjectCounter;
-            
+
+            this.ownerRoom = ownerRoom;
+            //Console.WriteLine("spawned GameObject {0} of type {1}", Id, ObjectType);
             //add Gameobject in room      
         }
 
@@ -73,5 +75,7 @@ namespace ServerProjectInfiniteRunner
         {
 
         }
+        
+       
     }
 }

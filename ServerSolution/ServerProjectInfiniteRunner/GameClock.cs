@@ -29,11 +29,10 @@ namespace ServerProjectInfiniteRunner
 
         public float GetDeltaTime()
         {
-            beforeTick = clock.ElapsedTicks;
-            float dt = clock.ElapsedTicks - beforeTick;
-            return dt/100;
-
-            
+            long now = clock.ElapsedMilliseconds;
+            float dT = (now - beforeTick); // / 1000
+            beforeTick = now;
+            return dT / 1000;
         }
     }
 }
