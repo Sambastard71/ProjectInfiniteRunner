@@ -11,6 +11,7 @@ public class LobbyControl : MonoBehaviour
     public GameObject Slider;
     public GameObject WaitingText;
     public GameObject ReadyButton;
+    
 
     string[] text;
 
@@ -61,13 +62,18 @@ public class LobbyControl : MonoBehaviour
         uint roomId = RoomDetails.RoomID;
         float posX = MinePlayer.Position.x;
         float posY = MinePlayer.Position.y;
-        float posZ = MinePlayer.Position.z;
         float colliderWidth = MinePlayer.ColliderWidth;
         float colliderHeight = MinePlayer.ColliderHeight;
+        float SpawnObstacleX = MinePlayer.PositionOfSpawners.x;
+        float SpawnObstacleY = MinePlayer.PositionOfSpawners.y;
+
 
         RoomDetails.Player1IsReady = true;
+        
 
-        Packet packet = new Packet(command_setup, idMinePLayer, roomId, posX, posY, posZ, colliderWidth, colliderHeight);
+
+        Packet packet = new Packet(command_setup, idMinePLayer, roomId, posX, posY, colliderWidth, colliderHeight,SpawnObstacleX,SpawnObstacleY);
+        
         Client.Send(packet.GetData());
 
         textComponent.text = text[0];

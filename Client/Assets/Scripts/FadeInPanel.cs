@@ -25,9 +25,9 @@ public class FadeInPanel : MonoBehaviour
         img.canvasRenderer.SetAlpha(0);
         AlphaDuration = 0.2f;
         AlphaIncVal = 1;
-        Slider.active = false;
-        TextTMP.active = false;
-        gameObject.active = false;
+        Slider.SetActive(false);
+        TextTMP.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -42,8 +42,8 @@ public class FadeInPanel : MonoBehaviour
 
             if (img.canvasRenderer.GetAlpha() == 1)
             {
-                Slider.active = true;
-                TextTMP.active = true;
+                Slider.SetActive(true);
+                TextTMP.SetActive(true);
             }
     }
 }

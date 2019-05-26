@@ -21,8 +21,13 @@ public class GamePanelController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        countdownChecker();
+        
+    }
+
+    private void countdownChecker()
+    {
         if (roomDetails.CountdownToPlay != 0) countdown.text = roomDetails.CountdownToPlay.ToString();
         else countdown.text = "START!";
-        
     }
 }

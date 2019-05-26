@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85f86ab320489114aa9870fdbcded62e, type: 3}
+  m_Name: RoomInfo
+  m_EditorClassIdentifier: 
+  roomID: 0
+  playerInRoom: 1
+  player1IsReady: 0
+  player2IsReady: 0
+  gameIsStarted: 0
+  spawnPlayers: 0
+  countdownToPlay: 1
+  gameObjects: []
+  spawners: {fileID: 0}
+  prefabsObstacles:
+  - {fileID: 6619609810210761215, guid: 56fbd15f2c1a1a84a915b1c825d3c257, type: 3}
+  - {fileID: 2070515925736555748, guid: b7056ff75b41c224fbe11a80f06bcba8, type: 3}
+  - {fileID: 5217146770991460435, guid: 126c93c1f32bffd439d8c826851f0225, type: 3}
+  prefabPlayer: {fileID: 1956545653725611174, guid: d21e717e240cb2146aabacc2a3d14861,
+    type: 3}

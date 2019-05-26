@@ -12,6 +12,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844ae86d345d0a746be593024fc9083e, type: 3}
   m_Name: OtherPlayer
   m_EditorClassIdentifier: 
-  roomId: 0
-  myIdInRoom: 0
-  position: {x: 0, y: 0, z: 0}
