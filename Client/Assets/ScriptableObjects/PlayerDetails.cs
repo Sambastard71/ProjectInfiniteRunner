@@ -10,6 +10,7 @@ public class PlayerDetails : ScriptableObject
     uint myIdInRoom;
 
     Vector3 position;
+    Vector3 positionOfSpawners;
 
     float colliderWidth;
     float colliderHeight;
@@ -47,6 +48,18 @@ public class PlayerDetails : ScriptableObject
         set
         {
             position = value;
+        }
+    }
+
+    public Vector3 PositionOfSpawners
+    {
+        get
+        {
+            return positionOfSpawners;
+        }
+        set
+        {
+            positionOfSpawners = value;
         }
     }
 

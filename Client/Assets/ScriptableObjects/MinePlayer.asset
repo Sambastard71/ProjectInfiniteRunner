@@ -9,12 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85f86ab320489114aa9870fdbcded62e, type: 3}
-  m_Name: RoomInfo
+  m_Script: {fileID: 11500000, guid: 844ae86d345d0a746be593024fc9083e, type: 3}
+  m_Name: MinePlayer
   m_EditorClassIdentifier: 
-  roomID: 0
-  playerInRoom: 2
-  player1IsReady: 1
-  player2IsReady: 1
-  gameIsStarted: 0
-  countdownToPlay: 0

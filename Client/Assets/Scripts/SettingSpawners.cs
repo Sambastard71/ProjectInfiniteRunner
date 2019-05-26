@@ -4,26 +4,30 @@ using UnityEngine;
 
 public class SettingSpawners : MonoBehaviour
 {
+    public RoomDetails roomDetails;
+    public Transform ParentOfGameobjectsSpawned;
     public PlayerDetails MinePlayer;
-    public PlayerDetails OtherPlayer;
+    public float colliderWidth;
+    public float colliderHeight;
 
-    SettingSpawnPlayer[] playersSpawner;
-    
+
     void Start()
     {
-        playersSpawner = new SettingSpawnPlayer[2];
-        for (int i = 0; i < transform.childCount; i++)
+        if(MinePlayer.MyIdInRoom==1)
         {
-            playersSpawner[i] = transform.GetChild(i).GetComponent<SettingSpawnPlayer>();
-        }
-
-        if (MinePlayer.MyIdInRoom == 1)
-        {
-            playersSpawner[0].SetPlayer(MinePlayer);
+            MinePlayer.Position = transform.GetChild(0).position;
+            MinePlayer.PositionOfSpawners = transform.GetChild(2).position;
         }
         else
         {
-            playersSpawner[1].SetPlayer(MinePlayer);
+            MinePlayer.Position = transform.GetChild(1).position;
+            MinePlayer.PositionOfSpawners = transform.GetChild(3).position;
         }
+
+        MinePlayer.ColliderWidth = colliderWidth;
+        MinePlayer.ColliderHeight = colliderHeight;
+
+        roomDetails.Spawners = this.gameObject;
+        roomDetails.ParentOfGameobjectsSpawned = ParentOfGameobjectsSpawned;
     }
 }
