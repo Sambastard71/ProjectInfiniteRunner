@@ -84,6 +84,7 @@ namespace ServerProjectInfiniteRunner
 
             rooms = new List<Room>();
             rooms.Add(new Room((uint)numOfRooms, this));
+            
         }
 
         public void Start()
@@ -203,13 +204,13 @@ namespace ServerProjectInfiniteRunner
             Console.WriteLine("client {0} joined with avatar {1}", c.ID, c.Avatar.Id);
         }
 
-
-        // (comando,idpersonaggioNellaStanza,idRoom,xpos,ypos,zpos,width,height collider)
+        //     1   +            4           +   4  +  4 +  4 + 4    + 4            +   4    +  4   = 33
+        // (comando,idpersonaggioNellaStanza,idRoom,xpos,ypos,width,height collider, spawnX, spawnY)
         private void SetUp(byte[] packet, EndPoint endPoint)
         {
             Client c; // = new Client(endPoint, this);
 
-            if (packet.Length != 29 )
+            if (packet.Length != 33 )
             {
                 foreach (Client client in clients)
                 {
@@ -230,23 +231,26 @@ namespace ServerProjectInfiniteRunner
             uint idPersonaggio = BitConverter.ToUInt32(packet, 1);
             uint idRoom = BitConverter.ToUInt32(packet, 5);
             float xPos = BitConverter.ToSingle(packet, 9);
-            float yPos = BitConverter.ToSingle(packet, 12);
-            float zPos = BitConverter.ToSingle(packet, 15);
-            float width = BitConverter.ToSingle(packet, 18);
+            float yPos = BitConverter.ToSingle(packet, 13);
+            float width = BitConverter.ToSingle(packet, 17);
             float height = BitConverter.ToSingle(packet, 21);
+            float spawnX = BitConverter.ToSingle(packet, 25);
+            float spawnY = BitConverter.ToSingle(packet, 29);
 
 
             Room room = Rooms[(int)idRoom];
+            room.SpawnersPos[idPersonaggio - 1].X = spawnX;
+            room.SpawnersPos[idPersonaggio - 1].Y = spawnY;
+
             c = room.Players[(int)idPersonaggio - 1];
 
-            c.Avatar.XPos = xPos;
-            c.Avatar.YPos = yPos;
-            c.Avatar.ZPos = zPos;
+            c.Avatar.Position.X = xPos;
+            c.Avatar.Position.Y = yPos;
             c.Avatar.Width = width;
             c.Avatar.Height = height;
             c.IsReady = true;
 
-            Packet setUpOp = new Packet(COMMAND_SETUP_OP, idPersonaggio, idRoom, xPos, yPos, zPos);
+            Packet setUpOp = new Packet(COMMAND_SETUP_OP, idPersonaggio, idRoom, xPos, yPos, spawnX, spawnY);
 
             if (idPersonaggio == 1)
             {

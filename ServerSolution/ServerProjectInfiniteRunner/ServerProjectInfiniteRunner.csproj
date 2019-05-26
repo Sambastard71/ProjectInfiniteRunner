@@ -53,9 +53,9 @@
     <Compile Include="GameClock.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="IMonotonicClock.cs" />
-    <Compile Include="ISpawnable.cs" />
     <Compile Include="ITransport.cs" />
     <Compile Include="IUpdatable.cs" />
+    <Compile Include="Obstacle.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
