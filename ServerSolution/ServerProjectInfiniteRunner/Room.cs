@@ -45,15 +45,36 @@ namespace ServerProjectInfiniteRunner
             get { return players; }
         }
 
-        float countDown;
+        public Vector2[] SpawnersPos;
+        
+
+        float countDownStart;
+
+        
+        float countDownSpawn;
+        public float CountDownSpawn
+        {
+            get
+            {
+                return countDownSpawn;
+            }
+            set
+            {
+                countDownSpawn = value;
+            }
+        }
+        
+
 
         public Room(uint id, Server server)
         {
             serverOwner = server;
             this.id = id;
             players = new Client[2];
+            SpawnersPos = new Vector2[2];
             numOfPlayer = 0;
-            countDown = 3.666f;
+            countDownStart = 4.0f;
+            countDownSpawn = 5;
         }
 
         public bool AddPlayer(Client player)
@@ -84,21 +105,26 @@ namespace ServerProjectInfiniteRunner
                     //(comando, id room, countdown)
                     if (players[0].IsReady && players[1].IsReady)
                     {
-                        Packet countDownPacket = new Packet(Server.COMMAND_COUNTDOWN, ID, (int)countDown);
-                        countDown -= serverOwner.CurrentClock.GetDeltaTime();
+                        int cDBeforeSub = (int)countDownStart;
+                        countDownStart -= serverOwner.CurrentClock.GetDeltaTime();
 
-                        for (int i = 0; i < players.Length; i++)
+                        if (cDBeforeSub != (int)countDownStart)
                         {
-                            serverOwner.Send(countDownPacket.GetData(), players[i].EndPoint);
+                            Packet countDownPacket = new Packet(Server.COMMAND_COUNTDOWN, ID, (int)countDownStart);
+                            SendToAllClients(countDownPacket);
+                            Console.WriteLine(countDownStart);
                         }
-
-                        Console.WriteLine(countDown);
-                        if (countDown <= 0)
+                        
+                        if (countDownStart <= 0)
                         {
                             IsStartLoading = false;
                         }
                     }
                 }
+            }
+            else
+            {
+                SpawnManager.Spawn(this);
             }
 
             CheckMalus();

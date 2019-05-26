@@ -9,26 +9,21 @@ namespace ServerProjectInfiniteRunner
 {
     public class Collider2D
     {
-        public Avatar OwnerAvatar;
+        public GameObject OwnerGameObject;
 
-        public float Xpos
+        public Vector2 Position
         {
-            get { return OwnerAvatar.XPos; }
+            get { return OwnerGameObject.Position; }
         }
-
-        public float Ypos
-        {
-            get { return OwnerAvatar.YPos; }
-        }
-
+        
         public float Width
         {
-            get { return OwnerAvatar.Width; }
+            get { return OwnerGameObject.Width; }
         }
 
         public float Height
         {
-            get { return OwnerAvatar.Height; }
+            get { return OwnerGameObject.Height; }
         }
 
         public float HalfWidth;
@@ -37,17 +32,17 @@ namespace ServerProjectInfiniteRunner
         public uint CollisionType;
         public uint CollisionMask;
 
-        public Collider2D(Avatar avatar)
+        public Collider2D(GameObject gameObject)
         {
-            OwnerAvatar = avatar;
+            OwnerGameObject = gameObject;
             HalfHeight = Height / 2;
             HalfWidth = Width / 2;
         }
 
         public bool Collides(Collider2D collider, ref Collision collisionInfo)
         {
-            float distanceX = collider.Xpos - Xpos;
-            float distanceY = collider.Ypos - Ypos;
+            float distanceX = collider.Position.X - Position.X;
+            float distanceY = collider.Position.Y - Position.Y;
 
 
             float deltaX = Math.Abs(distanceX) - (HalfWidth + collider.HalfWidth);
@@ -68,8 +63,5 @@ namespace ServerProjectInfiniteRunner
         {
             CollisionMask |= mask;
         }
-
-        
-
     }
 }

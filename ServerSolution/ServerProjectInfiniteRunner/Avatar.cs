@@ -1,18 +1,17 @@
 ﻿using System;
 namespace ServerProjectInfiniteRunner
 {
-    public class Avatar : GameObject,IUpdatable, ISpawnable
+    public class Avatar : GameObject,IUpdatable
     {
         Collider2D collider;
         bool isCollisionAffected;
-
+        
         public Avatar(uint objectType,Room room):base(objectType,room)
         {
             ownerRoom = room;
 
             UpdateManager.AddItem(this);
-            SpawnManager.AddItem(this);
-
+            
             collider = new Collider2D(this);
 
             collider.CollisionType = (uint)UpdateManager.ColliderType.Player;
@@ -21,15 +20,8 @@ namespace ServerProjectInfiniteRunner
 
         public override void Update()
         {
-            base.Update();
-            Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, XPos, YPos, ZPos);
-            //Send to all clients in room
-        }
-
-        public void Spawn()
-        {
-            //Packet packet = new Packet(Server.COMMAND_SPAWN, Id, ObjectType ,ownerRoom.ID, XPos, YPos, ZPos);
-
+            //base.Update();
+            //Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, Position.X, Position.Y);
             //Send to all clients in room
         }
 
@@ -81,9 +73,6 @@ namespace ServerProjectInfiniteRunner
         public void Destroy()
         {
             UpdateManager.RemoveItem(this);
-            SpawnManager.RemoveItem(this);
-
-
         }
     }
 }

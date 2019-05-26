@@ -56,10 +56,14 @@
     <Compile Include="GameClock.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="IMonotonicClock.cs" />
+<<<<<<< HEAD
     <Compile Include="ISpawnable.cs" />
 >>>>>>> c839c5be7f1f1b8f35250e734b8415cddd600a3f
+=======
+>>>>>>> Server1
     <Compile Include="ITransport.cs" />
     <Compile Include="IUpdatable.cs" />
+    <Compile Include="Obstacle.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

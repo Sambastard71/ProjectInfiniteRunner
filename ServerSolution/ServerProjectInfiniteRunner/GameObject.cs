@@ -1,23 +1,40 @@
 ﻿using System;
 namespace ServerProjectInfiniteRunner
 {
+    public enum ObjectType
+    {
+        Avatar,
+        ShortObstacle,
+        NormalObstacle,
+        TallObstacle
+    }
+
+    public struct Vector2
+    {
+        public float X;
+        public float Y;
+
+        public Vector2(float x, float y)
+        {
+            X = x;
+            Y = y;
+        }
+    }
+
+
     public abstract class GameObject
     {
-        public float XPos;
-        public float YPos;
-        public float ZPos;
+        public Vector2 Position;
 
-        public float XVel;
-        public float YVel;
-        public float ZVel;
+        public Vector2 Velocity;
 
         public float Width;
         public float Height;
 
         public bool IsActive;
 
-        private uint internalObjectType;
-        public uint ObjectType
+        private ObjectType internalObjectType;
+        public ObjectType ObjectType
         {
             get
             {
@@ -41,7 +58,7 @@ namespace ServerProjectInfiniteRunner
 
         public GameObject(uint objectType,Room ownerRoom)
         {
-            internalObjectType = objectType;
+            internalObjectType = (ObjectType)objectType;
             internalId = ++gameObjectCounter;
 
             this.ownerRoom = ownerRoom;
@@ -51,31 +68,25 @@ namespace ServerProjectInfiniteRunner
 
         public void SetPosition(float x, float y, float z)
         {
-            XPos = x;
-            YPos = y;
-            ZPos = z;
+            Position.X = x;
+            Position.Y = y;
         }
 
         public void SetVelocity(float x, float y, float z)
         {
-            XVel = x;
-            YVel = y;
-            ZVel = z;
+            Velocity.X = x;
+            Velocity.Y = y;
         }
 
         public virtual void Update()
         {
-            XPos += XVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
-            YPos += YVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
-            ZPos += ZVel * ownerRoom.Server.CurrentClock.GetDeltaTime();
-
+            Position.X += Velocity.X * ownerRoom.Server.CurrentClock.GetDeltaTime();
+            Position.Y += Velocity.Y * ownerRoom.Server.CurrentClock.GetDeltaTime();
         }
 
         public virtual void OnCollide(Collision collisionInfo)
         {
 
         }
-        
-       
     }
 }
