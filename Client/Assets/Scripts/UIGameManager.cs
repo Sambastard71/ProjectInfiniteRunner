@@ -28,6 +28,7 @@ public class UIGameManager : MonoBehaviour
         if(checkStartPanel())
         {
             GamePanel.SetActive(true);
+            PreStartPanel.SetActive(false);
         }
         
     }

@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: RoomInfo
   m_EditorClassIdentifier: 
   roomID: 0
-  playerInRoom: 1
-  player1IsReady: 0
-  player2IsReady: 0
-  gameIsStarted: 0
-  spawnPlayers: 0
-  countdownToPlay: 1
-  gameObjects: []
+  playerInRoom: 2
+  player1IsReady: 1
+  player2IsReady: 1
+  gameIsStarted: 1
+  spawnPlayers: 1
+  countdownToPlay: 0
   spawners: {fileID: 0}
+  parentOfGameobjectsSpawned: {fileID: 0}
   prefabsObstacles:
   - {fileID: 6619609810210761215, guid: 56fbd15f2c1a1a84a915b1c825d3c257, type: 3}
   - {fileID: 2070515925736555748, guid: b7056ff75b41c224fbe11a80f06bcba8, type: 3}

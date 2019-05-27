@@ -27,8 +27,8 @@ public class RoomDetails : ScriptableObject
     float countdownToPlay;
 
     [SerializeField]
-    Dictionary<uint, GameObject> gameObjects = new Dictionary<uint, GameObject>();
-    
+    Dictionary<uint, GameObject> gameObjects;
+
     [SerializeField]
     GameObject spawners;
 
@@ -66,7 +66,7 @@ public class RoomDetails : ScriptableObject
         set { prefabPlayer = value; }
     }
 
-    public Dictionary<uint,GameObject> GameObjects
+    public Dictionary<uint, GameObject> GameObjects
     {
         get { return gameObjects; }
         set { gameObjects = value; }
@@ -92,7 +92,7 @@ public class RoomDetails : ScriptableObject
 
     public int GetPlayerInRoom()
     {
-            return playerInRoom;
+        return playerInRoom;
     }
 
     public void AddPlayerRoom(bool trueToAddPlayer)
@@ -160,16 +160,20 @@ public class RoomDetails : ScriptableObject
     }
     public void ResetElement()
     {
-        GameObjects = new Dictionary<uint, GameObject>();
         playerInRoom = 0;
         roomID = 0;
         player1IsReady = false;
         player2IsReady = false;
+        gameIsStarted = false;
+        spawnPlayers = false;
+        countdownToPlay = 3;
+        gameObjects = new Dictionary<uint, GameObject>();
+        
     }
-    
 
 
-    public void SpawnGameObject(uint id,uint objectType, int laneToSpawn)
+
+    public void SpawnGameObject(uint id, uint objectType, int laneToSpawn)
     {
         GameObject go;
 
@@ -177,13 +181,15 @@ public class RoomDetails : ScriptableObject
         {
             case 1:
                 go = PrefabPlayer;
-                if(laneToSpawn == 1)
+                if (laneToSpawn == 1)
                 {
-                    go.transform.position= Spawners.transform.GetChild(0).transform.position;
+                    Vector3 SpawnPlayer1 = Spawners.transform.GetChild(0).transform.position;
+                    go.transform.position = new Vector3(SpawnPlayer1.x, SpawnPlayer1.y,0);
                 }
                 else
                 {
-                    go.transform.position = Spawners.transform.GetChild(1).transform.position;
+                    Vector3 SpawnPlayer2 = Spawners.transform.GetChild(1).transform.position;
+                    go.transform.position = new Vector3(SpawnPlayer2.x, SpawnPlayer2.y, 0);
                 }
 
                 break;
@@ -202,12 +208,12 @@ public class RoomDetails : ScriptableObject
 
         }
 
-        GameObject obstacle = Instantiate(go,ParentOfGameobjectsSpawned);
+        GameObject obstacle = Instantiate(go, ParentOfGameobjectsSpawned);
 
         Debug.Log("Spawn Gameobj");
 
 
-        if (objectType!=1 && laneToSpawn == 1)
+        if (objectType != 1 && laneToSpawn == 1)
         {
             obstacle.transform.position = Spawners.transform.GetChild(2).transform.position;
         }
@@ -221,21 +227,21 @@ public class RoomDetails : ScriptableObject
             System.Console.WriteLine("Wrong spawn datas!");
         }
 
-        gameObjects.Add(id,obstacle);
+        gameObjects.Add(id, obstacle);
     }
 
-    public bool UpdateGameObject(uint id, float posX,float posY)
+    public bool UpdateGameObject(uint id, float posX, float posY)
     {
-       if(gameObjects.ContainsKey(id))
-       {
-            gameObjects[id].transform.position = new Vector3(posX, 0 ,posY);
+        if (gameObjects.ContainsKey(id))
+        {
+            gameObjects[id].transform.position = new Vector3(posX, posY, Spawners.transform.GetChild(2).position.z);
 
             return true;
-       }
-       else
-       {
+        }
+        else
+        {
             return false;
-       }
+        }
     }
 }
 

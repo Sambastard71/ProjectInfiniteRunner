@@ -69,8 +69,9 @@ public class Client : MonoBehaviour
         commands[COMMAND_SETUP_OP] = SetUpOtherPlayer;
         commands[COMMAND_COUNTDOWN] = Countdown;
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
-
         
+
+
 
     }
 
@@ -173,7 +174,7 @@ public class Client : MonoBehaviour
 
     void SetUpOtherPlayer(byte[] data, EndPoint sender)
     {
-        if (data.Length != 21)
+        if (data.Length != 25)
         {
             return;
         }
