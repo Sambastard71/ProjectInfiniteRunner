@@ -19,7 +19,7 @@ public class LobbyControl : MonoBehaviour
 
     public float AlphaDuration;
     public float AlphaIncVal;
-    public Image img;
+   
     TextMeshProUGUI textComponent;
 
     private void Start()
@@ -31,10 +31,7 @@ public class LobbyControl : MonoBehaviour
         textComponent = WaitingText.GetComponent<TextMeshProUGUI>();
         textComponent.text = text[0];
 
-        img = GetComponent<Image>();
-        img.canvasRenderer.SetAlpha(1);
-        AlphaDuration = 0.2f;
-        AlphaIncVal = -0.2f;
+        
     }
 
     void Update()

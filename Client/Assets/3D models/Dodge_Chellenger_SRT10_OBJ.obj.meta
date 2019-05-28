@@ -1,0 +1,236 @@
+fileFormatVersion: 2
+guid: d56ee5da5db17584089779f797ac07ae
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: body
+    100002: brakes_f_l
+    100004: brakes_f_r
+    100006: brakes_r_l
+    100008: brakes_r_r
+    100010: //RootNode
+    100012: glass
+    100014: headlights
+    100016: interior
+    100018: rearlights
+    100020: wheel_f_l
+    100022: wheel_f_r
+    100024: wheel_r_l
+    100026: wheel_r_r
+    400000: body
+    400002: brakes_f_l
+    400004: brakes_f_r
+    400006: brakes_r_l
+    400008: brakes_r_r
+    400010: //RootNode
+    400012: glass
+    400014: headlights
+    400016: interior
+    400018: rearlights
+    400020: wheel_f_l
+    400022: wheel_f_r
+    400024: wheel_r_l
+    400026: wheel_r_r
+    2100000: bodyMat
+    2100002: brakes_f_lMat
+    2100004: brakes_f_rMat
+    2100006: brakes_r_lMat
+    2100008: brakes_r_rMat
+    2100010: glassMat
+    2100012: headlightsMat
+    2100014: interiorMat
+    2100016: rearlightsMat
+    2100018: wheel_f_lMat
+    2100020: wheel_f_rMat
+    2100022: wheel_r_lMat
+    2100024: wheel_r_rMat
+    2300000: body
+    2300002: brakes_f_l
+    2300004: brakes_f_r
+    2300006: brakes_r_l
+    2300008: brakes_r_r
+    2300010: glass
+    2300012: headlights
+    2300014: interior
+    2300016: rearlights
+    2300018: wheel_f_l
+    2300020: wheel_f_r
+    2300022: wheel_r_l
+    2300024: wheel_r_r
+    3300000: body
+    3300002: brakes_f_l
+    3300004: brakes_f_r
+    3300006: brakes_r_l
+    3300008: brakes_r_r
+    3300010: glass
+    3300012: headlights
+    3300014: interior
+    3300016: rearlights
+    3300018: wheel_f_l
+    3300020: wheel_f_r
+    3300022: wheel_r_l
+    3300024: wheel_r_r
+    4300000: body
+    4300002: brakes_f_l
+    4300004: brakes_f_r
+    4300006: brakes_r_l
+    4300008: brakes_r_r
+    4300010: glass
+    4300012: headlights
+    4300014: interior
+    4300016: rearlights
+    4300018: wheel_f_l
+    4300020: wheel_f_r
+    4300022: wheel_r_l
+    4300024: wheel_r_r
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bodyMat
+    second: {fileID: 2100000, guid: b097a9e1e5da5794da16f83921c160c7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brakes_f_lMat
+    second: {fileID: 2100000, guid: 6fe96cd79c6984d4b88bd8f1de63b265, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brakes_f_rMat
+    second: {fileID: 2100000, guid: 0a6f44fb42ce87f4f9e458f7dcc64e6c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brakes_r_lMat
+    second: {fileID: 2100000, guid: 9f3a8122755c4994f883690715fb20f2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brakes_r_rMat
+    second: {fileID: 2100000, guid: 1fb95965ab3843741a6c421c9b6ec1f6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glassMat
+    second: {fileID: 2100000, guid: e288f6a1af60a114bb17f3bc98ad64de, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: headlightsMat
+    second: {fileID: 2100000, guid: 273a62a9f7b20ec4bb9959b1cbfaff28, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: interiorMat
+    second: {fileID: 2100000, guid: 29f3cf4fd6868c547b71157ef4820e66, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rearlightsMat
+    second: {fileID: 2100000, guid: 9db828419a20c4f41b89e20e58a77e0a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wheel_f_lMat
+    second: {fileID: 2100000, guid: 194c7f36c7389d0459d7ebfd030713e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wheel_f_rMat
+    second: {fileID: 2100000, guid: 6f669232a14670247a0779d34566e303, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wheel_r_lMat
+    second: {fileID: 2100000, guid: 7db25e89ecf388242aa15869018f4b17, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wheel_r_rMat
+    second: {fileID: 2100000, guid: b1b53f40277225f4083f026a0775fb5e, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

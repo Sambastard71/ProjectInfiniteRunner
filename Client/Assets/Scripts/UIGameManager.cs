@@ -39,15 +39,8 @@ public class UIGameManager : MonoBehaviour
 
         if(RoomDetails.PlayersAreReady)
         {
-            lobbyControl.img.CrossFadeAlpha(lobbyControl.AlphaIncVal, lobbyControl.AlphaDuration, true);
-            if (lobbyControl.img.canvasRenderer.GetAlpha() <= 0.4f)
-            {
-                lobbyControl.ReadyButton.SetActive(false);
-                lobbyControl.WaitingText.SetActive(false);
-
-                
-            }
-
+            lobbyControl.ReadyButton.SetActive(false);
+            lobbyControl.WaitingText.SetActive(false);
             StartCountdown = true;
         }
 

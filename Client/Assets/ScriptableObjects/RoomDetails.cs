@@ -38,8 +38,10 @@ public class RoomDetails : ScriptableObject
     [SerializeField]
     public GameObject[] prefabsObstacles;
 
-    [SerializeField]
-    public GameObject prefabPlayer;
+    
+    public GameObject prefabPlayer1;
+    public GameObject prefabPlayer2;
+
 
 
     public GameObject Spawners
@@ -60,10 +62,16 @@ public class RoomDetails : ScriptableObject
         set { prefabsObstacles = value; }
     }
 
-    public GameObject PrefabPlayer
+    public GameObject PrefabPlayer1
     {
-        get { return prefabPlayer; }
-        set { prefabPlayer = value; }
+        get { return prefabPlayer1; }
+        set { prefabPlayer1 = value; }
+    }
+
+    public GameObject PrefabPlayer2
+    {
+        get { return prefabPlayer2; }
+        set { prefabPlayer2 = value; }
     }
 
     public Dictionary<uint, GameObject> GameObjects
@@ -180,14 +188,15 @@ public class RoomDetails : ScriptableObject
         switch (objectType)
         {
             case 1:
-                go = PrefabPlayer;
                 if (laneToSpawn == 1)
                 {
+                    go = prefabPlayer1;
                     Vector3 SpawnPlayer1 = Spawners.transform.GetChild(0).transform.position;
                     go.transform.position = new Vector3(SpawnPlayer1.x, SpawnPlayer1.y,0);
                 }
                 else
                 {
+                    go = prefabPlayer2;
                     Vector3 SpawnPlayer2 = Spawners.transform.GetChild(1).transform.position;
                     go.transform.position = new Vector3(SpawnPlayer2.x, SpawnPlayer2.y, 0);
                 }
