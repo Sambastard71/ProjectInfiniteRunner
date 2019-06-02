@@ -11,7 +11,7 @@ namespace ServerProjectInfiniteRunner
     {
         public GameObject OwnerGameObject;
 
-        public Vector2 Position
+        public Vector3 Position
         {
             get { return OwnerGameObject.Position; }
         }
@@ -42,18 +42,17 @@ namespace ServerProjectInfiniteRunner
         public bool Collides(Collider2D collider, ref Collision collisionInfo)
         {
             float distanceX = collider.Position.X - Position.X;
-            float distanceY = collider.Position.Y - Position.Y;
-
+            float distanceZ = collider.Position.Z - Position.Z;
 
             float deltaX = Math.Abs(distanceX) - (HalfWidth + collider.HalfWidth);
-            float deltaY = Math.Abs(distanceY) - (HalfHeight + collider.HalfHeight);
+            float deltaZ = Math.Abs(distanceZ) - (HalfHeight + collider.HalfHeight);
 
-            if (deltaX <= 0 && deltaY <= 0)
+            if (deltaX <= 0 && deltaZ <= 0)
             {
                 //setting collision's info
                 collisionInfo.Type = Collision.CollisionType.RectsIntersection;
                 collisionInfo.DeltaX = -deltaX; 
-                collisionInfo.DeltaY = -deltaY;
+                collisionInfo.DeltaY = -deltaZ;
                 return true;
             }
             return false;

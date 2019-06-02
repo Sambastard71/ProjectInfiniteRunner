@@ -6,28 +6,30 @@ public class SettingSpawners : MonoBehaviour
 {
     public RoomDetails roomDetails;
     public Transform ParentOfGameobjectsSpawned;
-    public PlayerDetails MinePlayer;
-    public float colliderWidth;
-    public float colliderHeight;
+    public GameObject Spawners;
+
 
 
     void Start()
     {
-        if(MinePlayer.MyIdInRoom==1)
+        roomDetails.ParentOfGameobjectsSpawned = ParentOfGameobjectsSpawned;
+        roomDetails.Spawners = Spawners;
+        if (roomDetails.minePlayer.MyIdInRoom == 0)
         {
-            MinePlayer.Position = transform.GetChild(0).position;
-            MinePlayer.PositionOfSpawners = transform.GetChild(2).position;
+            roomDetails.minePlayer.Position = Spawners.transform.GetChild(0).position;
+            roomDetails.otherPlayer.Position = Spawners.transform.GetChild(1).position;
+
+            roomDetails.minePlayer.PositionOfSpawners = Spawners.transform.GetChild(2).position;
+            roomDetails.otherPlayer.PositionOfSpawners = Spawners.transform.GetChild(3).position;
         }
         else
         {
-            MinePlayer.Position = transform.GetChild(1).position;
-            MinePlayer.PositionOfSpawners = transform.GetChild(3).position;
+            roomDetails.minePlayer.Position = Spawners.transform.GetChild(1).position;
+            roomDetails.otherPlayer.Position = Spawners.transform.GetChild(0).position;
+
+            roomDetails.minePlayer.PositionOfSpawners = Spawners.transform.GetChild(3).position;
+            roomDetails.otherPlayer.PositionOfSpawners = Spawners.transform.GetChild(2).position;
         }
 
-        MinePlayer.ColliderWidth = colliderWidth;
-        MinePlayer.ColliderHeight = colliderHeight;
-
-        roomDetails.Spawners = this.gameObject;
-        roomDetails.ParentOfGameobjectsSpawned = ParentOfGameobjectsSpawned;
     }
 }

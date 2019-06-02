@@ -42,7 +42,8 @@ public class RoomDetails : ScriptableObject
     public GameObject prefabPlayer1;
     public GameObject prefabPlayer2;
 
-
+    public PlayerDetails minePlayer;
+    public PlayerDetails otherPlayer;
 
     public GameObject Spawners
     {
@@ -191,14 +192,12 @@ public class RoomDetails : ScriptableObject
                 if (laneToSpawn == 1)
                 {
                     go = prefabPlayer1;
-                    Vector3 SpawnPlayer1 = Spawners.transform.GetChild(0).transform.position;
-                    go.transform.position = new Vector3(SpawnPlayer1.x, SpawnPlayer1.y,0);
+                    go.transform.position = minePlayer.Position;
                 }
                 else
                 {
                     go = prefabPlayer2;
-                    Vector3 SpawnPlayer2 = Spawners.transform.GetChild(1).transform.position;
-                    go.transform.position = new Vector3(SpawnPlayer2.x, SpawnPlayer2.y, 0);
+                    go.transform.position = otherPlayer.Position;
                 }
 
                 break;
@@ -224,11 +223,14 @@ public class RoomDetails : ScriptableObject
 
         if (objectType != 1 && laneToSpawn == 1)
         {
-            obstacle.transform.position = Spawners.transform.GetChild(2).transform.position;
+
+            obstacle.transform.localPosition = minePlayer.PositionOfSpawners;
         }
         else if (objectType != 1 && laneToSpawn == 2)
         {
-            obstacle.transform.position = Spawners.transform.GetChild(3).transform.position;
+
+            obstacle.transform.localPosition = otherPlayer.PositionOfSpawners;
+            
 
         }
         else
@@ -239,11 +241,11 @@ public class RoomDetails : ScriptableObject
         gameObjects.Add(id, obstacle);
     }
 
-    public bool UpdateGameObject(uint id, float posX, float posY)
+    public bool UpdateGameObject(uint id, float posX, float posY, float posZ)
     {
         if (gameObjects.ContainsKey(id))
         {
-            gameObjects[id].transform.position = new Vector3(posX, posY, Spawners.transform.GetChild(2).position.z);
+            gameObjects[id].transform.position = new Vector3(posX, posY, posZ);
 
             return true;
         }

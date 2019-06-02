@@ -48,10 +48,10 @@
   <ItemGroup>
     <Compile Include="Avatar.cs" />
     <Compile Include="ClientSim.cs" />
-    <Compile Include="GameObject.cs" />
     <Compile Include="Collider2D.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="GameClock.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="IMonotonicClock.cs" />
     <Compile Include="ITransport.cs" />
     <Compile Include="IUpdatable.cs" />

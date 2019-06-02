@@ -4,30 +4,42 @@ namespace ServerProjectInfiniteRunner
     public class Avatar : GameObject,IUpdatable
     {
         Collider2D collider;
-        bool isCollisionAffected;
+        
         
         public Avatar(uint objectType,Room room):base(objectType,room)
         {
             ownerRoom = room;
 
-            UpdateManager.AddItem(this);
-            
+            Width = 40;
+            Height = 15;
+
+
             collider = new Collider2D(this);
 
             collider.CollisionType = (uint)UpdateManager.ColliderType.Player;
             collider.AddCollision((uint)UpdateManager.ColliderType.Obstacle);
+
+            UpdateManager.AddItem(this);
         }
 
         public override void Update()
         {
             //base.Update();
+
+            //counterToUpdate -= ownerRoom.Server.CurrentClock.GetDeltaTime();
+            //if (counterToUpdate <= 0)
+            //{
             //Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, Position.X, Position.Y);
             //Send to all clients in room
+            //}
         }
 
         public override void OnCollide(Collision collisionInfo)
         {
-            base.OnCollide(collisionInfo);
+            UpdateManager.AddItemToRemoveList(this);
+
+            Packet packet = new Packet(Server.COMMAND_COLLIDE, Id, ownerRoom.ID);
+            ownerRoom.SendToAllClients(packet);
         }
 
         public bool GetIsCollisionAffected()
@@ -57,7 +69,7 @@ namespace ServerProjectInfiniteRunner
 
         public bool CheckCollisionWith(Collider2D collider)
         {
-            return (collider.CollisionMask & collider.CollisionMask) != 0;
+            return (this.collider.CollisionType & collider.CollisionMask) == this.collider.CollisionType;
         }
 
         public Collider2D GetCollider()
@@ -74,5 +86,7 @@ namespace ServerProjectInfiniteRunner
         {
             UpdateManager.RemoveItem(this);
         }
+
+        
     }
 }

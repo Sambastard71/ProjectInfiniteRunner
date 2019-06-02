@@ -66,6 +66,10 @@ public class Packet
             {
                 writer.Write((int)element);
             }
+            else if (element is bool)
+            {
+                writer.Write((bool)element);
+            }
         }
     }
 

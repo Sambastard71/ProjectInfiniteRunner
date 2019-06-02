@@ -17,12 +17,15 @@ public class Client : MonoBehaviour
     public string MyAddres;
     public int MyPort;
 
-    const byte COMMAND_UPDATE= 2;
-    const byte COMMAND_WELCOME = 5;
-    const byte COMMAND_P_CONNECTED = 8;
-    const byte COMMAND_SETUP_OP = 9;
-    const byte COMMAND_COUNTDOWN = 10;
-    const byte COMMAND_SPAWN_OBSTACLE = 11;
+    public const byte COMMAND_UPDATE= 2;
+    public const byte COMMAND_WELCOME = 5;
+    public const byte COMMAND_P_CONNECTED = 8;
+    public const byte COMMAND_SETUP_OP = 9;
+    public const byte COMMAND_COUNTDOWN = 10;
+    public const byte COMMAND_SPAWN_OBSTACLE = 11;
+    public const byte COMMAND_COLLIDE = 12;
+    public const byte COMMAND_INTANGIBLE = 7;
+
 
     command[] commands;
 
@@ -69,6 +72,7 @@ public class Client : MonoBehaviour
         commands[COMMAND_SETUP_OP] = SetUpOtherPlayer;
         commands[COMMAND_COUNTDOWN] = Countdown;
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
+        commands[COMMAND_COLLIDE] = Collided;
         
 
 
@@ -86,6 +90,7 @@ public class Client : MonoBehaviour
         {
             return;
         }
+        
 
         commands[data[0]](data, sender);
     }
@@ -174,7 +179,7 @@ public class Client : MonoBehaviour
 
     void SetUpOtherPlayer(byte[] data, EndPoint sender)
     {
-        if (data.Length != 25)
+        if (data.Length != 33)
         {
             return;
         }
@@ -192,19 +197,21 @@ public class Client : MonoBehaviour
 
         float posX = BitConverter.ToSingle(data, 9);
         float posY = BitConverter.ToSingle(data, 13);
+        float posZ = BitConverter.ToSingle(data, 17);
 
-        OtherPlayer.Position = new Vector3(posX, posY);
+        OtherPlayer.Position = new Vector3(posX,posY,posZ);
 
-        float posXSpawnerObstacles = BitConverter.ToSingle(data, 17);
-        float posYSpawnerObstacles = BitConverter.ToSingle(data, 21);
+        float posXSpawnerObstacles = BitConverter.ToSingle(data, 21);
+        float posYSpawnerObstacles = BitConverter.ToSingle(data, 25);
+        float posZSpawnerObstacles = BitConverter.ToSingle(data, 29);
 
-        OtherPlayer.PositionOfSpawners = new Vector3(posXSpawnerObstacles, posYSpawnerObstacles);
+        OtherPlayer.PositionOfSpawners = new Vector3(posXSpawnerObstacles, posYSpawnerObstacles,posZSpawnerObstacles);
 
         RoomDetails.Player2IsReady = true;
 
         Debug.Log("OtherPlayer Setupped!");
 
-        RoomDetails.SpawnGameObject(MinePlayer.MyIdInRoom,1, 1);
+        
         RoomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom,1, 2);
 
 
@@ -271,7 +278,7 @@ public class Client : MonoBehaviour
 
     private void Update(byte[] data, EndPoint sender)
     {
-        if (data.Length != 17)
+        if (data.Length != 21)
         {
             return;
         }
@@ -280,6 +287,7 @@ public class Client : MonoBehaviour
         uint roomId = BitConverter.ToUInt32(data, 5);
         float posX = BitConverter.ToSingle(data, 9);
         float posY = BitConverter.ToSingle(data, 13);
+        float posZ = BitConverter.ToSingle(data, 17);
 
         if (RoomDetails.RoomID != roomId)
         {
@@ -288,9 +296,30 @@ public class Client : MonoBehaviour
 
         
 
-        RoomDetails.UpdateGameObject(idinRoom,posX,posY);
+        RoomDetails.UpdateGameObject(idinRoom,posX,posY,posZ);
 
 
+
+    }
+
+    private void Collided(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 9)
+        {
+            return;
+        }
+
+        uint idinRoom = BitConverter.ToUInt32(data, 1);
+        uint roomId = BitConverter.ToUInt32(data, 5);
+        
+
+        if (RoomDetails.RoomID != roomId)
+        {
+            return;
+        }
+
+        DestroyImmediate(RoomDetails.GameObjects[idinRoom]);
+        RoomDetails.GameObjects.Remove(idinRoom);
 
     }
 }

@@ -22,5 +22,7 @@ namespace ServerProjectInfiniteRunner
         GameObject GetGameObject();
 
         void Update();
+
+        void SendUpdate();
     }
 }

@@ -9,15 +9,17 @@ namespace ServerProjectInfiniteRunner
     class Obstacle : GameObject, IUpdatable
     {
         Collider2D collider;
-        bool isCollisionAffected;
+        
 
-        public Obstacle(uint objectType, Vector2 pos, Vector2 vel, Room ownerRoom) : base(objectType, ownerRoom)
+        public Obstacle(uint objectType, Vector3 pos, Vector3 vel, Room ownerRoom) : base(objectType, ownerRoom)
         {
-            Position.X = pos.X;
-            Position.Y = pos.Y;
 
-            Velocity.X = vel.X;
-            Velocity.Y = vel.Y;
+            SetPosition(pos.X, pos.Y, pos.Z);
+            SetVelocity(vel.X, vel.Y, vel.Z);
+
+            Width = 25;
+            Height = 45;
+
 
             collider = new Collider2D(this);
 
@@ -29,7 +31,7 @@ namespace ServerProjectInfiniteRunner
 
         public bool CheckCollisionWith(Collider2D collider)
         {
-            return (collider.CollisionMask & collider.CollisionMask) != 0;
+            return (this.collider.CollisionType & collider.CollisionMask) == this.collider.CollisionType;
         }
 
         public Collider2D GetCollider()
@@ -75,9 +77,29 @@ namespace ServerProjectInfiniteRunner
         public override void Update()
         {
             base.Update();
-            Console.WriteLine("Item id: {0} \n Pos.x: {1} \n Pos.Y: {2}", Id, Position.X, Position.Y);
-            Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, Position.X, Position.Y);
-            ownerRoom.SendToAllClients(packet);
+
+            
+        }
+
+        public override void OnCollide(Collision collisionInfo)
+        {
+            if(collisionInfo.Collider.Id==1)
+                Console.WriteLine("Collided player1");
+            else if(collisionInfo.Collider.Id == 2)
+                Console.WriteLine("Collided player2");
+
+        }
+
+        public override void SendUpdate()
+        {
+            counterToUpdate -= 0.02f;
+            if (counterToUpdate <= 0)
+            {
+                Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, Position.X, Position.Y, Position.Z);
+                ownerRoom.SendToAllClients(packet);
+
+                counterToUpdate = Server.TIME_TO_SEND_UPDATE;
+            }
         }
     }
 }

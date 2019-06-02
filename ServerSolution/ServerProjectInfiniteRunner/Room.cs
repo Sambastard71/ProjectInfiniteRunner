@@ -12,6 +12,8 @@ namespace ServerProjectInfiniteRunner
 
         private bool IsStartLoading = true;
 
+        private bool spawn = false;
+
         private Server serverOwner;
         public Server Server
         {
@@ -45,7 +47,7 @@ namespace ServerProjectInfiniteRunner
             get { return players; }
         }
 
-        public Vector2[] SpawnersPos;
+        public Vector3[] SpawnersPos;
         
 
         float countDownStart;
@@ -71,7 +73,7 @@ namespace ServerProjectInfiniteRunner
             serverOwner = server;
             this.id = id;
             players = new Client[2];
-            SpawnersPos = new Vector2[2];
+            SpawnersPos = new Vector3[2];
             numOfPlayer = 0;
             countDownStart = 4.0f;
             countDownSpawn = 5;
@@ -106,7 +108,7 @@ namespace ServerProjectInfiniteRunner
                     if (players[0].IsReady && players[1].IsReady)
                     {
                         int cDBeforeSub = (int)countDownStart;
-                        countDownStart -= serverOwner.CurrentClock.GetDeltaTime();
+                        countDownStart -= 0.01f;
 
                         if (cDBeforeSub != (int)countDownStart)
                         {
@@ -118,21 +120,29 @@ namespace ServerProjectInfiniteRunner
                         if (countDownStart <= 0)
                         {
                             IsStartLoading = false;
+                            spawn = true;
                         }
                     }
                 }
             }
-            else
+            else if(spawn)
             {
-                SpawnManager.Spawn(this);
-            }
+                int lane = 1;
+                for (int i = 0; i < 2; i++)
+                {
+                    if (i == 1) lane = 2;
 
+                    SpawnManager.Spawn(this,lane);
+                }
+                spawn = false;
+            }
+            
             CheckMalus();
             //spawn of obstacles
+            UpdateManager.Update();
 
             UpdateManager.CheckCollisions();
 
-            UpdateManager.Update();
         }
 
         public void SendToAllClients(Packet packet)

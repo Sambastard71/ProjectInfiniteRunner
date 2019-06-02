@@ -11,17 +11,24 @@ namespace ServerProjectInfiniteRunner
         public enum ColliderType : uint { Player = 1, Obstacle = 2}
 
         static List<IUpdatable> items;
+        static List<IUpdatable> itemsToRemove;
 
         static Collision collisionInfo;
 
         static UpdateManager()
         {
             items = new List<IUpdatable>();
+            itemsToRemove = new List<IUpdatable>();
         }
 
         public static void AddItem(IUpdatable item)
         {
             items.Add(item);
+        }
+
+        public static void AddItemToRemoveList(IUpdatable item)
+        {
+            itemsToRemove.Add(item);
         }
 
         public static void RemoveItem(IUpdatable item)
@@ -36,9 +43,17 @@ namespace ServerProjectInfiniteRunner
 
         public static void Update()
         {
-            for (int i = 0; i < items.Count; i++)
+            if(items.Count>0)
             {
-                items[i].Update();
+                for (int i = 0; i < items.Count; i++)
+                {
+                    items[i].Update();
+                }
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    items[i].SendUpdate();                
+                }
             }
         }
 
@@ -67,11 +82,23 @@ namespace ServerProjectInfiniteRunner
                                     collisionInfo.Collider = items[i].GetGameObject();
                                     items[j].GetGameObject().OnCollide(collisionInfo);
                                 }
+
+                                foreach (IUpdatable item in itemsToRemove)
+                                {
+                                    RemoveItem(item);
+                                }
+
+                                itemsToRemove.RemoveAll(ToDelete);
                             }
                         }
                     }
                 }
             }
+        }
+
+        private static bool ToDelete(IUpdatable item)
+        {
+            return true;
         }
 
     }

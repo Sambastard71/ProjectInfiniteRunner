@@ -27,12 +27,6 @@ namespace ServerProjectInfiniteRunner
 
         }
 
-        public float GetDeltaTime()
-        {
-            long now = clock.ElapsedMilliseconds;
-            float dT = (now - beforeTick); // / 1000
-            beforeTick = now;
-            return dT / 1000;
-        }
+        
     }
 }

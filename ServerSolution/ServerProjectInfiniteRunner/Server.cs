@@ -17,11 +17,12 @@ namespace ServerProjectInfiniteRunner
 
         const int MAX_ROOM = 32;
 
+        public const float TIME_TO_SEND_UPDATE = 0.3f;
+
         //Command List To Update
 
         public const byte COMMAND_JOIN = 1;
         public const byte COMMAND_UPDATE = 2;
-        public const byte COMMAND_SPAWN = 3;
         public const byte COMMAND_ERROR = 4;
         public const byte COMMAND_WELCOME = 5;
         public const byte COMMAND_SETUP = 6;
@@ -29,6 +30,8 @@ namespace ServerProjectInfiniteRunner
         public const byte COMMAND_P_CONNECTED = 8;
         public const byte COMMAND_SETUP_OP = 9;
         public const byte COMMAND_COUNTDOWN = 10;
+        public const byte COMMAND_SPAWN = 11;
+        public const byte COMMAND_COLLIDE = 12;
 
 
 
@@ -107,7 +110,7 @@ namespace ServerProjectInfiniteRunner
                 room.Process();
             }
 
-            CurrentClock.GetDeltaTime();
+            
             EndPoint sender = transport.CreateEndPoint();
             byte[] data = transport.Recv(256, ref sender);
 
@@ -205,12 +208,12 @@ namespace ServerProjectInfiniteRunner
         }
 
         //     1   +            4           +   4  +  4 +  4 + 4    + 4            +   4    +  4   = 33
-        // (comando,idpersonaggioNellaStanza,idRoom,xpos,ypos,width,height collider, spawnX, spawnY)
+        // (comando,idpersonaggioNellaStanza,idRoom,xpos,ypos,zpos,width,height collider, spawnX, spawnY)
         private void SetUp(byte[] packet, EndPoint endPoint)
         {
             Client c; // = new Client(endPoint, this);
 
-            if (packet.Length != 33 )
+            if (packet.Length != 41 )
             {
                 foreach (Client client in clients)
                 {
@@ -232,25 +235,29 @@ namespace ServerProjectInfiniteRunner
             uint idRoom = BitConverter.ToUInt32(packet, 5);
             float xPos = BitConverter.ToSingle(packet, 9);
             float yPos = BitConverter.ToSingle(packet, 13);
-            float width = BitConverter.ToSingle(packet, 17);
-            float height = BitConverter.ToSingle(packet, 21);
-            float spawnX = BitConverter.ToSingle(packet, 25);
-            float spawnY = BitConverter.ToSingle(packet, 29);
+            float zPos = BitConverter.ToSingle(packet, 17);
+            float width = BitConverter.ToSingle(packet, 21);
+            float height = BitConverter.ToSingle(packet, 25);
+            float spawnX = BitConverter.ToSingle(packet, 29);
+            float spawnY = BitConverter.ToSingle(packet, 33);
+            float spawnZ = BitConverter.ToSingle(packet, 37);
 
 
             Room room = Rooms[(int)idRoom];
             room.SpawnersPos[idPersonaggio - 1].X = spawnX;
             room.SpawnersPos[idPersonaggio - 1].Y = spawnY;
+            room.SpawnersPos[idPersonaggio - 1].Z = spawnZ;
+
 
             c = room.Players[(int)idPersonaggio - 1];
 
             c.Avatar.Position.X = xPos;
             c.Avatar.Position.Y = yPos;
-            c.Avatar.Width = width;
-            c.Avatar.Height = height;
+            c.Avatar.Position.Z = zPos;
+            
             c.IsReady = true;
 
-            Packet setUpOp = new Packet(COMMAND_SETUP_OP, idPersonaggio, idRoom, xPos, yPos, spawnX, spawnY);
+            Packet setUpOp = new Packet(COMMAND_SETUP_OP, idPersonaggio, idRoom, xPos, yPos ,zPos, spawnX, spawnY,spawnZ);
 
             if (idPersonaggio == 1)
             {
@@ -265,13 +272,13 @@ namespace ServerProjectInfiniteRunner
         // (comando,idpersonaggioNellaStanza,idRoom)
         private void Intangible(byte[] packet, EndPoint endPoint)
         {
-            Client c = new Client(endPoint, this);
+            Client c;
 
-            if (packet.Length != 9 || !clients.Exists(client => client.EndPoint.Equals(c.EndPoint)))
+            if (packet.Length != 10 || !clients.Exists(client => client.EndPoint.Equals(endPoint)))
             {
                 foreach (Client client in clients)
                 {
-                    if (client.EndPoint.Equals(c.EndPoint))
+                    if (client.EndPoint.Equals(endPoint))
                     {
                         client.malus -= 10;
                     }
@@ -282,11 +289,12 @@ namespace ServerProjectInfiniteRunner
 
             uint idPersonaggio = BitConverter.ToUInt32(packet, 1);
             uint idRoom = BitConverter.ToUInt32(packet, 5);
+            bool isIntangible = BitConverter.ToBoolean(packet, 9);
 
             Room room = Rooms[(int)idRoom];
-            c = room.Players[(int)idPersonaggio];
+            c = room.Players[(int)idPersonaggio-1];
 
-            c.Avatar.SetIsCollisionAffected(false);
+            c.Avatar.SetIsCollisionAffected(isIntangible);
 
         }
     }

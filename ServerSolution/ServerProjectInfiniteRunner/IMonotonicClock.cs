@@ -9,7 +9,7 @@ namespace ServerProjectInfiniteRunner
     public interface IMonotonicClock
     {
         float GetNow();
-        float GetDeltaTime();
+        
     }
     
 }

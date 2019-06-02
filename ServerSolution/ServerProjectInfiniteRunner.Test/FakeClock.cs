@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner.Test
 {
-    class FakeClock //: IMonotonicClock
+    class FakeClock : IMonotonicClock
     {
         float timeStamp;
 
         public FakeClock(float timeStamp = 0)
         {
             this.timeStamp = timeStamp;
+        }
+
+        public float GetDeltaTime()
+        {
+            return 0;
         }
 
         public float GetNow()

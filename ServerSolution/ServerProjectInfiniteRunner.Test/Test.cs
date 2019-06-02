@@ -9,14 +9,16 @@ namespace ServerProjectInfiniteRunner.Test
 {
     public class Test
     {
+        FakeClock clock;
         FakeTransport transport;
         Server server;
 
         [SetUp]
         public void SetupTest()
         {
+            clock = new FakeClock();
             transport = new FakeTransport();
-            server = new Server(transport);
+            server = new Server(transport,clock);
         }
 
 

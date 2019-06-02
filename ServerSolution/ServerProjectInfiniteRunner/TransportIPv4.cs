@@ -21,7 +21,7 @@ namespace ServerProjectInfiniteRunner
 
         public void Bind(string address, int port)
         {
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(address), port);
+            endPoint = new IPEndPoint(IPAddress.Parse(address), port);
             socket.Bind(endPoint);
         }
 

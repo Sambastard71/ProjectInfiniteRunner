@@ -8,26 +8,29 @@ namespace ServerProjectInfiniteRunner
 {
     static class SpawnManager
     {
-        public static void Spawn(Room room)
-        {
-            
-            room.CountDownSpawn -= room.Server.CurrentClock.GetDeltaTime();
 
-            if (room.CountDownSpawn <= 0)
-            {
+        public static void Spawn(Room room, int lane)
+        {
+
                 Random rand = new Random();
 
-                uint obstacleType = (uint)rand.Next(1, 3);
-                int laneWhereSpawn = rand.Next(0, 1);
+                uint obstacleType = (uint)rand.Next(2, 5);
 
-                Vector2 pos = room.SpawnersPos[laneWhereSpawn];
-                Vector2 vel = new Vector2(-10, 0);
+                int laneWhereSpawn = lane;
+                //rand.Next(1, 3);
+
+                Vector3 pos = room.SpawnersPos[laneWhereSpawn-1];
+                Vector3 vel = new Vector3(-1f, 0,0);
 
                 Obstacle obstacle = new Obstacle(obstacleType, pos, vel, room);
+                
 
-                Packet SpawnObject = new Packet(Server.COMMAND_SPAWN, room.ID, obstacle.Id, obstacleType, laneWhereSpawn+1);
+                Packet SpawnObject = new Packet(Server.COMMAND_SPAWN, room.ID, obstacle.Id, obstacleType, laneWhereSpawn);
                 room.SendToAllClients(SpawnObject);
-            }
+                
+
+               
+            
             
         }
     }
