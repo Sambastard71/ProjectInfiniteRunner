@@ -18,13 +18,13 @@ public class Inputs : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.M))
         {
             
             Packet packet = new Packet(Client.COMMAND_INTANGIBLE, roomDetails.minePlayer.MyIdInRoom, roomDetails.RoomID,false);
             Client.Send(packet.GetData());
         }
-        else if(Input.GetKeyUp(KeyCode.Space))
+        else if(Input.GetKeyUp(KeyCode.M))
         {
             
             Packet packet = new Packet(Client.COMMAND_INTANGIBLE, roomDetails.minePlayer.MyIdInRoom, roomDetails.RoomID, true);
