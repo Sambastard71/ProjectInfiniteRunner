@@ -27,9 +27,12 @@ public class Client : MonoBehaviour
     public const byte COMMAND_COLLIDE = 12;
     public const byte COMMAND_INTANGIBLE = 7;
     public const byte COMMAND_DESTROY= 14;
+    public const byte COMMAND_INTANGIBLE_OP = 13;
 
     public Animator animatorMenu;
     public Animator animatorGame;
+
+    public Animator animatorOP;
 
     System.Net.NetworkInformation.Ping pingSender = new System.Net.NetworkInformation.Ping();
     PingOptions options = new PingOptions(64, true);
@@ -83,6 +86,8 @@ public class Client : MonoBehaviour
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
         commands[COMMAND_COLLIDE] = Collided;
         commands[COMMAND_DESTROY] = DestroyObstacle;
+        commands[COMMAND_INTANGIBLE_OP] = IntangibleOP;
+
 
 
 
@@ -97,14 +102,20 @@ public class Client : MonoBehaviour
         EndPoint sender = new IPEndPoint(0, 0);
         byte[] data = Recv(256, ref sender);
 
-        CheckLatency(MinePlayer);
+        if (data != null)
+        {
+            Debug.Log(data[0]);
+            commands[data[0]](data, sender);
+        }
+        
+        //CheckLatency(MinePlayer);
 
         foreach (KeyValuePair<uint, GameObject> gos in RoomDetails.GameObjects)
         {
             uint key = gos.Key;
             GameObject go = gos.Value;
 
-            go.transform.position = Vector3.Lerp(go.transform.position, RoomDetails.gameObjectsNewPositions[key],(2+MinePlayer.Latency)*Time.deltaTime);
+            go.transform.position = Vector3.Lerp(go.transform.position, RoomDetails.gameObjectsNewPositions[key],(1+MinePlayer.Latency)*Time.deltaTime);
         }
 
         if (!isSpawnedPlayer2)
@@ -122,13 +133,9 @@ public class Client : MonoBehaviour
             animatorGame.SetBool("Countdown", false);
         }
 
-        if (data == null)
-        {
-            return;
-        }
+       
         
 
-        commands[data[0]](data, sender);
 
     }
 
@@ -399,6 +406,26 @@ public class Client : MonoBehaviour
 
         DestroyImmediate(RoomDetails.GameObjects[idinRoom]);
         RoomDetails.GameObjects.Remove(idinRoom);
+
+    }
+
+    private void IntangibleOP(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 9)
+        {
+            return;
+        }
+
+        uint roomId = BitConverter.ToUInt32(data, 1);
+        bool OtherPlaierIsIntangible = BitConverter.ToBoolean(data, 5);
+
+
+        if (RoomDetails.RoomID != roomId)
+        {
+            return;
+        }
+
+        
 
     }
 

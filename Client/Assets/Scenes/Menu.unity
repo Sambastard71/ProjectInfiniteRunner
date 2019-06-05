@@ -487,6 +487,7 @@ MonoBehaviour:
   MyPort: 9997
   animatorMenu: {fileID: 236740820}
   animatorGame: {fileID: 0}
+  animatorOP: {fileID: 0}
   MinePlayer: {fileID: 11400000, guid: a9675d26a7c870a4ebde2ea656b7c87c, type: 2}
   OtherPlayer: {fileID: 11400000, guid: fe48b6213edff0548b1d3f4ca12ade12, type: 2}
   RoomDetails: {fileID: 11400000, guid: 457a22c4d1fd4d3469b769b6e1b40f0b, type: 2}

@@ -44,12 +44,13 @@ public class RoomDetails : ScriptableObject
     [SerializeField]
     public GameObject[] prefabsObstacles;
 
-
     public GameObject prefabPlayer1;
     public GameObject prefabPlayer2;
 
     public PlayerDetails minePlayer;
     public PlayerDetails otherPlayer;
+
+    
 
     public GameObject Spawners
     {
@@ -207,12 +208,13 @@ public class RoomDetails : ScriptableObject
                 {
                     go = prefabPlayer1;
                     go.transform.position = minePlayer.Position;
-                    go.tag = "Player1";
+                    
                 }
                 else
                 {
                     go = prefabPlayer2;
                     go.transform.position = otherPlayer.Position;
+                   
                 }
 
                 break;
