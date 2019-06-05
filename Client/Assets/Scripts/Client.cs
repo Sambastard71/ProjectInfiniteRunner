@@ -27,6 +27,8 @@ public class Client : MonoBehaviour
     public const byte COMMAND_COLLIDE = 12;
     public const byte COMMAND_INTANGIBLE = 7;
     public const byte COMMAND_DESTROY= 14;
+    public const byte COMMAND_INTANGIBLEOP = 13;
+
 
     public Animator animatorMenu;
     public Animator animatorGame;
@@ -51,7 +53,7 @@ public class Client : MonoBehaviour
     SceneManagement sceneManagement;
     public PlayerDetails MinePlayer;
     public PlayerDetails OtherPlayer;
-    public RoomDetails RoomDetails;
+    public RoomDetails roomDetails;
 
     public List<GameObject> gameobjects = new List<GameObject>();
 
@@ -63,7 +65,7 @@ public class Client : MonoBehaviour
         sceneManagement = GetComponent<SceneManagement>();
         MinePlayer.ResetElement();
         OtherPlayer.ResetElement();
-        RoomDetails.ResetElement();
+        roomDetails.ResetElement();
 
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.Blocking = false;
@@ -83,6 +85,8 @@ public class Client : MonoBehaviour
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
         commands[COMMAND_COLLIDE] = Collided;
         commands[COMMAND_DESTROY] = DestroyObstacle;
+        commands[COMMAND_INTANGIBLEOP] = IntangibleOP;
+
 
 
 
@@ -97,27 +101,27 @@ public class Client : MonoBehaviour
         EndPoint sender = new IPEndPoint(0, 0);
         byte[] data = Recv(256, ref sender);
 
-        CheckLatency(MinePlayer);
+        //CheckLatency(MinePlayer);
 
-        foreach (KeyValuePair<uint, GameObject> gos in RoomDetails.GameObjects)
+        foreach (KeyValuePair<uint, GameObject> gos in roomDetails.GameObjects)
         {
             uint key = gos.Key;
             GameObject go = gos.Value;
 
-            go.transform.position = Vector3.Lerp(go.transform.position, RoomDetails.gameObjectsNewPositions[key],(2+MinePlayer.Latency)*Time.deltaTime);
+            go.transform.position = Vector3.Lerp(go.transform.position, roomDetails.gameObjectsNewPositions[key],(2+MinePlayer.Latency)*Time.deltaTime);
         }
 
         if (!isSpawnedPlayer2)
         {
-            if (SceneManager.GetActiveScene().buildIndex == 1 && RoomDetails.Player2IsReady)
+            if (SceneManager.GetActiveScene().buildIndex == 1 && roomDetails.Player2IsReady)
             {
-                RoomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom, 1, (int)OtherPlayer.MyIdInRoom);
+                roomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom, 1, (int)OtherPlayer.MyIdInRoom);
                 isSpawnedPlayer2 = true;
                 animatorGame.SetTrigger("Ready2");
             }
         }
 
-        if(RoomDetails.GameIsStarted)
+        if(roomDetails.GameIsStarted)
         {
             animatorGame.SetBool("Countdown", false);
         }
@@ -181,9 +185,9 @@ public class Client : MonoBehaviour
         MinePlayer.MyIdInRoom = BitConverter.ToUInt32(data, 1);
         MinePlayer.RoomId = BitConverter.ToUInt32(data, 5);
 
-        RoomDetails.RoomID = MinePlayer.RoomId;
+        roomDetails.RoomID = MinePlayer.RoomId;
 
-        RoomDetails.AddPlayerRoom(true);
+        roomDetails.AddPlayerRoom(true);
 
         Debug.Log(MinePlayer.MyIdInRoom);
         Debug.Log(MinePlayer.RoomId);
@@ -198,14 +202,14 @@ public class Client : MonoBehaviour
     // (command, player2Id, roomId)
     void OtherPlayerConnected(byte[] data, EndPoint sender)
     {
-        RoomDetails.OtherPlayerIsConnected = true;
+        roomDetails.OtherPlayerIsConnected = true;
 
         if (data.Length > 9)
         {
             return;
         }
         
-        if (RoomDetails.RoomID != BitConverter.ToUInt32(data, 5))
+        if (roomDetails.RoomID != BitConverter.ToUInt32(data, 5))
         {
             return;
         }
@@ -213,7 +217,7 @@ public class Client : MonoBehaviour
         OtherPlayer.MyIdInRoom = BitConverter.ToUInt32(data, 1);
         OtherPlayer.RoomId = BitConverter.ToUInt32(data, 5);
 
-        RoomDetails.AddPlayerRoom(true);
+        roomDetails.AddPlayerRoom(true);
         
         Debug.Log(OtherPlayer.MyIdInRoom);
         Debug.Log(OtherPlayer.RoomId);
@@ -234,7 +238,7 @@ public class Client : MonoBehaviour
             return;
         }
 
-        if (RoomDetails.RoomID != BitConverter.ToUInt32(data, 5))
+        if (roomDetails.RoomID != BitConverter.ToUInt32(data, 5))
         {
             return;
         }
@@ -243,7 +247,7 @@ public class Client : MonoBehaviour
         OtherPlayer.RoomId = BitConverter.ToUInt32(data, 5);
 
 
-        RoomDetails.AddPlayerRoom(true);
+        roomDetails.AddPlayerRoom(true);
 
         float posX = BitConverter.ToSingle(data, 9);
         float posY = BitConverter.ToSingle(data, 13);
@@ -257,7 +261,7 @@ public class Client : MonoBehaviour
 
         OtherPlayer.PositionOfSpawners = new Vector3(posXSpawnerObstacles, posYSpawnerObstacles,posZSpawnerObstacles);
 
-        RoomDetails.Player2IsReady = true;
+        roomDetails.Player2IsReady = true;
 
         
 
@@ -280,7 +284,7 @@ public class Client : MonoBehaviour
             return;
         }
 
-        if (RoomDetails.RoomID != BitConverter.ToUInt32(data, 1))
+        if (roomDetails.RoomID != BitConverter.ToUInt32(data, 1))
         {
             return;
         }
@@ -289,21 +293,21 @@ public class Client : MonoBehaviour
 
         if (countdownValue == 3)
         {
-            RoomDetails.CountdownToPlay = 3;
+            roomDetails.CountdownToPlay = 3;
         }
         else if (countdownValue == 2)
         {
-            RoomDetails.CountdownToPlay = 2;
+            roomDetails.CountdownToPlay = 2;
         }
         else if (countdownValue == 1)
         {
-            RoomDetails.CountdownToPlay = 1;
+            roomDetails.CountdownToPlay = 1;
         }
         else if (countdownValue <= 0)
         {
-            RoomDetails.CountdownToPlay = 0;
-            RoomDetails.GameIsStarted = true;
-            RoomDetails.SpawnPlayers = true;
+            roomDetails.CountdownToPlay = 0;
+            roomDetails.GameIsStarted = true;
+            roomDetails.SpawnPlayers = true;
         }
 
 
@@ -322,14 +326,14 @@ public class Client : MonoBehaviour
         uint objectType = BitConverter.ToUInt32(data, 9);
         int laneToSpawn = BitConverter.ToInt32(data, 13);
 
-        if (RoomDetails.RoomID != roomId)
+        if (roomDetails.RoomID != roomId)
         {
             return;
         }
 
         Debug.Log("Spawn data recieved");
 
-        RoomDetails.SpawnGameObject(idinRoom,objectType,laneToSpawn);
+        roomDetails.SpawnGameObject(idinRoom,objectType,laneToSpawn);
     }
 
     private void Update(byte[] data, EndPoint sender)
@@ -347,14 +351,14 @@ public class Client : MonoBehaviour
         float posY = BitConverter.ToSingle(data, 13);
         float posZ = BitConverter.ToSingle(data, 17);
 
-        if (RoomDetails.RoomID != roomId)
+        if (roomDetails.RoomID != roomId)
         {
             return;
         }
 
         
 
-        RoomDetails.UpdateGameObject(idinRoom,posX,posY,posZ);
+        roomDetails.UpdateGameObject(idinRoom,posX,posY,posZ);
 
 
 
@@ -371,13 +375,13 @@ public class Client : MonoBehaviour
         uint roomId = BitConverter.ToUInt32(data, 5);
         
 
-        if (RoomDetails.RoomID != roomId)
+        if (roomDetails.RoomID != roomId)
         {
             return;
         }
 
-        DestroyImmediate(RoomDetails.GameObjects[idinRoom]);
-        RoomDetails.GameObjects.Remove(idinRoom);
+        DestroyImmediate(roomDetails.GameObjects[idinRoom]);
+        roomDetails.GameObjects.Remove(idinRoom);
 
     }
 
@@ -392,13 +396,33 @@ public class Client : MonoBehaviour
         uint roomId = BitConverter.ToUInt32(data, 1);
 
 
-        if (RoomDetails.RoomID != roomId)
+        if (roomDetails.RoomID != roomId)
         {
             return;
         }
 
-        DestroyImmediate(RoomDetails.GameObjects[idinRoom]);
-        RoomDetails.GameObjects.Remove(idinRoom);
+        DestroyImmediate(roomDetails.GameObjects[idinRoom]);
+        roomDetails.GameObjects.Remove(idinRoom);
+
+    }
+
+    private void IntangibleOP(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 9)
+        {
+            return;
+        }
+
+        uint roomId = BitConverter.ToUInt32(data, 1);
+        bool isIntangible = BitConverter.ToBoolean(data, 5);
+
+
+        if (roomDetails.RoomID != roomId)
+        {
+            return;
+        }
+
+        roomDetails.GameObjects[OtherPlayer.MyIdInRoom].GetComponent<Animator>().SetBool("Intangible", isIntangible);
 
     }
 
@@ -424,7 +448,7 @@ public class Client : MonoBehaviour
         {
             animatorGame = GameObject.FindGameObjectWithTag("CanvasGame").GetComponent<Animator>();
 
-            if(RoomDetails.OtherPlayerIsConnected==true)
+            if(roomDetails.OtherPlayerIsConnected==true)
             {
                 animatorGame.SetTrigger("P2connected");
             }
