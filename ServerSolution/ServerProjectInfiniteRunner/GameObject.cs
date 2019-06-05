@@ -116,9 +116,9 @@ namespace ServerProjectInfiniteRunner
 
         public virtual void Update()
         {
-            Position.X += Velocity.X;// * (Server.CurrentClock.DeltaTime() * 3);
-            Position.Y += Velocity.Y;// * (Server.CurrentClock.DeltaTime() * 3);
-            Position.Z += Velocity.Z;// * (Server.CurrentClock.DeltaTime() * 3);
+            Position.X += Velocity.X * (Server.CurrentClock.DeltaTime() * 3);
+            Position.Y += Velocity.Y * (Server.CurrentClock.DeltaTime() * 3);
+            Position.Z += Velocity.Z * (Server.CurrentClock.DeltaTime() * 3);
         }
 
         public virtual void OnCollide(Collision collisionInfo)

@@ -171,7 +171,7 @@ namespace ServerProjectInfiniteRunner
                 if (players[0].IsReady && players[1].IsReady)
                 {
                     int cDBeforeSub = (int)countDownStart;
-                    countDownStart -= TIMER;
+                    countDownStart -= Server.CurrentClock.DeltaTime();
 
                     if (cDBeforeSub != (int)countDownStart)
                     {
@@ -191,7 +191,7 @@ namespace ServerProjectInfiniteRunner
 
         private void Spawn()
         {
-            CountDownSpawn -= TIMER;
+            CountDownSpawn -= Server.CurrentClock.DeltaTime();
             if (countDownSpawn <= 0)
             {
                 Random rand = new Random();

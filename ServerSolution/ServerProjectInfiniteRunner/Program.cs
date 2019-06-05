@@ -14,7 +14,12 @@ namespace ServerProjectInfiniteRunner
             TransportIPv4 transport = new TransportIPv4();
             GameClock gameClock = new GameClock();
 
-            transport.Bind("192.168.1.191", 9999);
+            Console.WriteLine("Inserisci L'ip");
+            string ip = Console.ReadLine();
+            Console.WriteLine("Inserisci la porta");
+            string porta = Console.ReadLine();
+
+            transport.Bind(ip, int.Parse(porta));
 
             Server server = new Server(transport, gameClock);
             server.Start();
