@@ -27,12 +27,9 @@ public class Client : MonoBehaviour
     public const byte COMMAND_COLLIDE = 12;
     public const byte COMMAND_INTANGIBLE = 7;
     public const byte COMMAND_DESTROY= 14;
-<<<<<<< HEAD
-    public const byte COMMAND_INTANGIBLE_OP = 13;
-=======
     public const byte COMMAND_INTANGIBLEOP = 13;
 
->>>>>>> albertodev
+
 
     public Animator animatorMenu;
     public Animator animatorGame;
@@ -91,11 +88,9 @@ public class Client : MonoBehaviour
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
         commands[COMMAND_COLLIDE] = Collided;
         commands[COMMAND_DESTROY] = DestroyObstacle;
-<<<<<<< HEAD
-        commands[COMMAND_INTANGIBLE_OP] = IntangibleOP;
-=======
+
         commands[COMMAND_INTANGIBLEOP] = IntangibleOP;
->>>>>>> albertodev
+
 
 
 
@@ -111,15 +106,7 @@ public class Client : MonoBehaviour
         EndPoint sender = new IPEndPoint(0, 0);
         byte[] data = Recv(256, ref sender);
 
-<<<<<<< HEAD
-        if (data != null)
-        {
-            Debug.Log(data[0]);
-            commands[data[0]](data, sender);
-        }
-        
-=======
->>>>>>> albertodev
+
         //CheckLatency(MinePlayer);
 
         foreach (KeyValuePair<uint, GameObject> gos in roomDetails.GameObjects)
@@ -127,11 +114,8 @@ public class Client : MonoBehaviour
             uint key = gos.Key;
             GameObject go = gos.Value;
 
-<<<<<<< HEAD
-            go.transform.position = Vector3.Lerp(go.transform.position, RoomDetails.gameObjectsNewPositions[key],(1+MinePlayer.Latency)*Time.deltaTime);
-=======
             go.transform.position = Vector3.Lerp(go.transform.position, roomDetails.gameObjectsNewPositions[key],(2+MinePlayer.Latency)*Time.deltaTime);
->>>>>>> albertodev
+
         }
 
         if (!isSpawnedPlayer2)
@@ -445,25 +429,7 @@ public class Client : MonoBehaviour
 
     }
 
-    private void IntangibleOP(byte[] data, EndPoint sender)
-    {
-        if (data.Length != 9)
-        {
-            return;
-        }
-
-        uint roomId = BitConverter.ToUInt32(data, 1);
-        bool OtherPlaierIsIntangible = BitConverter.ToBoolean(data, 5);
-
-
-        if (RoomDetails.RoomID != roomId)
-        {
-            return;
-        }
-
-        
-
-    }
+   
 
     private void CheckLatency(PlayerDetails player)
     {
