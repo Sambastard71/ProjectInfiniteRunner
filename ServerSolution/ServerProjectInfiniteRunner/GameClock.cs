@@ -10,6 +10,7 @@ namespace ServerProjectInfiniteRunner
     class GameClock : IMonotonicClock
     {
         float beforeTick;
+        float nowTick;
         float currentClock;
         Stopwatch clock;
 
@@ -22,11 +23,17 @@ namespace ServerProjectInfiniteRunner
 
         public float GetNow()
         {
-            
-            return currentClock = clock.ElapsedTicks / Stopwatch.Frequency;
-
+            currentClock = (float)(clock.ElapsedTicks) / (float)(Stopwatch.Frequency);
+            beforeTick = nowTick;
+            nowTick = currentClock;
+            return currentClock;
         }
 
-        
+        public float DeltaTime()
+        {
+            float deltaTime = (nowTick - beforeTick);
+            //Console.WriteLine(deltaTime);
+            return deltaTime;
+        }
     }
 }

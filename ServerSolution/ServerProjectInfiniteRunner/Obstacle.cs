@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner
 {
-    class Obstacle : GameObject, IUpdatable
+    public class Obstacle : GameObject, IUpdatable
     {
         Collider2D collider;
-        
+        const float DESPAWN_OFFSET = 225;
 
         public Obstacle(uint objectType, Vector3 pos, Vector3 vel, Room ownerRoom) : base(objectType, ownerRoom)
         {
@@ -29,9 +29,14 @@ namespace ServerProjectInfiniteRunner
             UpdateManager.AddItem(this);
         }
 
+        //public bool CheckCollisionWith(Collider2D collider)
+        //{
+        //    return (this.collider.CollisionType & collider.CollisionMask) == this.collider.CollisionType;
+        //}
+
         public bool CheckCollisionWith(Collider2D collider)
         {
-            return (this.collider.CollisionType & collider.CollisionMask) == this.collider.CollisionType;
+            return (this.collider.CollisionMask & collider.CollisionType) != 0;
         }
 
         public Collider2D GetCollider()
@@ -72,12 +77,17 @@ namespace ServerProjectInfiniteRunner
         public void Destroy()
         {
             UpdateManager.RemoveItem(this);
+            Packet Destroy = new Packet(Server.COMMAND_DESTROY, ownerRoom.ID, Id);
+            ownerRoom.SendToAllClients(Destroy);
         }
 
         public override void Update()
         {
             base.Update();
-
+            if ((Position.X + DESPAWN_OFFSET) < ownerRoom.Players[0].Avatar.Position.X)
+            {
+                Destroy();
+            }
             
         }
 

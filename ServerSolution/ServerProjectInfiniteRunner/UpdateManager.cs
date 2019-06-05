@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner
 {
-    static class UpdateManager
+    public static class UpdateManager
     {
         public enum ColliderType : uint { Player = 1, Obstacle = 2}
 
@@ -38,6 +38,7 @@ namespace ServerProjectInfiniteRunner
 
         public static void RemoveAll()
         {
+            collisionInfo = new Collision();
             items.Clear();
         }
 
@@ -69,7 +70,7 @@ namespace ServerProjectInfiniteRunner
                         {
                             bool checkFirst = items[i].CheckCollisionWith(items[j].GetCollider());
                             bool checkSecond = items[j].CheckCollisionWith(items[i].GetCollider());
-
+                            
                             if (items[i].GetRoomId() == items[j].GetRoomId() && (checkFirst || checkSecond) && items[i].GetCollider().Collides(items[j].GetCollider(), ref collisionInfo))
                             {
                                 if (checkFirst)
@@ -82,7 +83,6 @@ namespace ServerProjectInfiniteRunner
                                     collisionInfo.Collider = items[i].GetGameObject();
                                     items[j].GetGameObject().OnCollide(collisionInfo);
                                 }
-
                                 foreach (IUpdatable item in itemsToRemove)
                                 {
                                     RemoveItem(item);
@@ -101,5 +101,10 @@ namespace ServerProjectInfiniteRunner
             return true;
         }
 
+        public static Collision GetCollisionInfo()
+        {
+            //Console.WriteLine(collisionInfo.Collider.ToString());
+            return collisionInfo;
+        }
     }
 }

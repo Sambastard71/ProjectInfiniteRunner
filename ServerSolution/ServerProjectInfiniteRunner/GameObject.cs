@@ -33,8 +33,30 @@ namespace ServerProjectInfiniteRunner
 
         protected float counterToUpdate = Server.TIME_TO_SEND_UPDATE;
 
-        public float Width;
-        public float Height;
+        public float Width
+        {
+            get
+            {
+                return width;
+            }
+            set
+            {
+                width = value;
+            }
+        }
+        private float width;
+        public float Height
+        {
+            get
+            {
+                return height;
+            }
+            set
+            {
+                height = value;
+            }
+        }
+        private float height;
 
         public bool IsActive;
         public bool isCollisionAffected;
@@ -50,6 +72,7 @@ namespace ServerProjectInfiniteRunner
         }
 
         private static uint gameObjectCounter;
+
         private uint internalId;
         public uint Id
         {
@@ -93,12 +116,9 @@ namespace ServerProjectInfiniteRunner
 
         public virtual void Update()
         {
-            
-
-            Position.X += Velocity.X ;
-            Position.Y += Velocity.Y ;
-            Position.Z += Velocity.Z ;
-
+            Position.X += Velocity.X;// * (Server.CurrentClock.DeltaTime() * 3);
+            Position.Y += Velocity.Y;// * (Server.CurrentClock.DeltaTime() * 3);
+            Position.Z += Velocity.Z;// * (Server.CurrentClock.DeltaTime() * 3);
         }
 
         public virtual void OnCollide(Collision collisionInfo)
@@ -109,6 +129,11 @@ namespace ServerProjectInfiniteRunner
         public virtual void SendUpdate()
         {
 
+        }
+
+        public static void ResetGoCounter()
+        {
+            gameObjectCounter = 0;
         }
     }
 }

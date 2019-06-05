@@ -15,9 +15,9 @@ namespace ServerProjectInfiniteRunner.Test
             this.timeStamp = timeStamp;
         }
 
-        public float GetDeltaTime()
+        public float DeltaTime()
         {
-            return 0;
+            return timeStamp;
         }
 
         public float GetNow()

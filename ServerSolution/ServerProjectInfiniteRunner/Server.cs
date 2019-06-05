@@ -17,7 +17,7 @@ namespace ServerProjectInfiniteRunner
 
         const int MAX_ROOM = 32;
 
-        public const float TIME_TO_SEND_UPDATE = 0.3f;
+        public const float TIME_TO_SEND_UPDATE = 0.6f;
 
         //Command List To Update
 
@@ -32,11 +32,14 @@ namespace ServerProjectInfiniteRunner
         public const byte COMMAND_COUNTDOWN = 10;
         public const byte COMMAND_SPAWN = 11;
         public const byte COMMAND_COLLIDE = 12;
+        public const byte COMMAND_INTANGIBLE_OP = 13;
+        public const byte COMMAND_DESTROY = 14;
+
 
 
 
         ITransport transport;
-        IMonotonicClock clock;
+        static IMonotonicClock clock;
         command[] commands;
 
         //List of clients in connected
@@ -47,7 +50,7 @@ namespace ServerProjectInfiniteRunner
             get { return clients.Count; }
         }
 
-        public IMonotonicClock CurrentClock
+        public static IMonotonicClock CurrentClock
         {
             get { return clock; }
         }
@@ -73,6 +76,8 @@ namespace ServerProjectInfiniteRunner
         //constructor that init the server parameters
         public Server(ITransport transport, IMonotonicClock gameClock)
         {
+            UpdateManager.RemoveAll();
+
             this.transport = transport;
 
             clock = gameClock;
@@ -83,17 +88,19 @@ namespace ServerProjectInfiniteRunner
             commands[COMMAND_SETUP] = SetUp;
             commands[COMMAND_INTANGIBLE] = Intangible;
 
+            Client.ResetNumberOfPlayer();
+            GameObject.ResetGoCounter();
             clients = new List<Client>();
 
             rooms = new List<Room>();
             rooms.Add(new Room((uint)numOfRooms, this));
-            
         }
 
         public void Start()
         {
             while (true)
             {
+                clock.GetNow();
                 SingleStep();
             }
         }
@@ -104,23 +111,29 @@ namespace ServerProjectInfiniteRunner
 
         public void SingleStep()
         {
+            Dispatch();
+            Process();
+        }
+
+        public void Dispatch()
+        {
+            EndPoint sender = transport.CreateEndPoint();
+            byte[] data = transport.Recv(256, ref sender);
+
+            if (data != null)
+            {
+                commands[data[0]](data, sender);
+            }
+
+        }
+
+        public void Process()
+        {
             //if Game in a room is starting do this
             foreach (Room room in Rooms)
             {
                 room.Process();
             }
-
-            
-            EndPoint sender = transport.CreateEndPoint();
-            byte[] data = transport.Recv(256, ref sender);
-
-            if (data == null)
-            {
-                return;
-            }
-
-            commands[data[0]](data, sender);
-
         }
 
         //Method that send packet to the client
@@ -128,10 +141,7 @@ namespace ServerProjectInfiniteRunner
         {
             return transport.Send(packet, endPoint);
         }
-
-
-
-
+        
         //TODO
         //Make The commands
         //Update
@@ -236,6 +246,7 @@ namespace ServerProjectInfiniteRunner
             float xPos = BitConverter.ToSingle(packet, 9);
             float yPos = BitConverter.ToSingle(packet, 13);
             float zPos = BitConverter.ToSingle(packet, 17);
+
             float width = BitConverter.ToSingle(packet, 21);
             float height = BitConverter.ToSingle(packet, 25);
             float spawnX = BitConverter.ToSingle(packet, 29);
@@ -254,7 +265,10 @@ namespace ServerProjectInfiniteRunner
             c.Avatar.Position.X = xPos;
             c.Avatar.Position.Y = yPos;
             c.Avatar.Position.Z = zPos;
-            
+
+            c.Avatar.Width = width;
+            c.Avatar.Height = height;
+
             c.IsReady = true;
 
             Packet setUpOp = new Packet(COMMAND_SETUP_OP, idPersonaggio, idRoom, xPos, yPos ,zPos, spawnX, spawnY,spawnZ);
@@ -269,7 +283,7 @@ namespace ServerProjectInfiniteRunner
             }
         }
 
-        // (comando,idpersonaggioNellaStanza,idRoom)
+        // (comando,idpersonaggioNellaStanza,idRoom, isIntangible)
         private void Intangible(byte[] packet, EndPoint endPoint)
         {
             Client c;
@@ -283,7 +297,6 @@ namespace ServerProjectInfiniteRunner
                         client.malus -= 10;
                     }
                 }
-
                 return;
             }
 
@@ -296,6 +309,28 @@ namespace ServerProjectInfiniteRunner
 
             c.Avatar.SetIsCollisionAffected(isIntangible);
 
+            //Console.WriteLine(isIntangible);
+            
+            Packet intangibleOp = new Packet(COMMAND_INTANGIBLE_OP, idRoom, isIntangible);
+
+            if (idPersonaggio == 1)
+            {
+                rooms[(int)idRoom].Players[1].Enqueue(intangibleOp);
+            }
+            else if (idPersonaggio == 2)
+            {
+                rooms[(int)idRoom].Players[0].Enqueue(intangibleOp);
+            }
+        }
+
+        public Client GetClient(int roomId, int idInRoom)
+        {
+            return Rooms[roomId].Players[idInRoom-1];
+        }
+
+        public Room GetRoom(int roomId)
+        {
+            return Rooms[roomId];
         }
     }
 }

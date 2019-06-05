@@ -48,7 +48,7 @@ namespace ServerProjectInfiniteRunner.Test
         public FakeData ClientDequeue()
         {
             FakeData packet = sendQueue.Dequeue();
-            Console.WriteLine(packet.data[0]);
+            Console.WriteLine("The command recived is: " + packet.data[0]);
             return packet;
         }
 

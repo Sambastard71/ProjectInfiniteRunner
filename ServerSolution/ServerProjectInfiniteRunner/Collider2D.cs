@@ -18,7 +18,8 @@ namespace ServerProjectInfiniteRunner
         
         public float Width
         {
-            get { return OwnerGameObject.Width; }
+            get {
+                return OwnerGameObject.Width; }
         }
 
         public float Height
@@ -26,8 +27,13 @@ namespace ServerProjectInfiniteRunner
             get { return OwnerGameObject.Height; }
         }
 
-        public float HalfWidth;
-        public float HalfHeight;
+        public float HalfWidth {
+           get { return Width/ 2; }
+        }
+        public float HalfHeight
+        {
+            get { return Height / 2; }
+        }
 
         public uint CollisionType;
         public uint CollisionMask;
@@ -35,18 +41,16 @@ namespace ServerProjectInfiniteRunner
         public Collider2D(GameObject gameObject)
         {
             OwnerGameObject = gameObject;
-            HalfHeight = Height / 2;
-            HalfWidth = Width / 2;
         }
 
         public bool Collides(Collider2D collider, ref Collision collisionInfo)
         {
             float distanceX = collider.Position.X - Position.X;
             float distanceZ = collider.Position.Z - Position.Z;
-
+            
             float deltaX = Math.Abs(distanceX) - (HalfWidth + collider.HalfWidth);
             float deltaZ = Math.Abs(distanceZ) - (HalfHeight + collider.HalfHeight);
-
+            
             if (deltaX <= 0 && deltaZ <= 0)
             {
                 //setting collision's info

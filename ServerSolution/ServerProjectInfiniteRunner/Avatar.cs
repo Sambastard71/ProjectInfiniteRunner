@@ -9,11 +9,7 @@ namespace ServerProjectInfiniteRunner
         public Avatar(uint objectType,Room room):base(objectType,room)
         {
             ownerRoom = room;
-
-            Width = 40;
-            Height = 15;
-
-
+            
             collider = new Collider2D(this);
 
             collider.CollisionType = (uint)UpdateManager.ColliderType.Player;
@@ -67,9 +63,14 @@ namespace ServerProjectInfiniteRunner
             return ownerRoom.ID;
         }
 
+        //public bool CheckCollisionWith(Collider2D collider)
+        //{
+        //    return (this.collider.CollisionType & collider.CollisionMask) == this.collider.CollisionType;
+        //}
+
         public bool CheckCollisionWith(Collider2D collider)
         {
-            return (this.collider.CollisionType & collider.CollisionMask) == this.collider.CollisionType;
+            return (this.collider.CollisionMask & collider.CollisionType) != 0;
         }
 
         public Collider2D GetCollider()

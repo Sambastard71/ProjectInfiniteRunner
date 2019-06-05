@@ -6,32 +6,30 @@ using System.Threading.Tasks;
 
 namespace ServerProjectInfiniteRunner
 {
-    static class SpawnManager
+    public static class SpawnManager
     {
 
-        public static void Spawn(Room room, int lane)
+        public static Obstacle Spawn(Room room, int lane)
         {
 
-                Random rand = new Random();
+            Random rand = new Random();
 
-                uint obstacleType = (uint)rand.Next(2, 5);
+            uint obstacleType = (uint)rand.Next(2, 5);
 
-                int laneWhereSpawn = lane;
-                //rand.Next(1, 3);
+            int laneWhereSpawn = lane;
 
-                Vector3 pos = room.SpawnersPos[laneWhereSpawn-1];
-                Vector3 vel = new Vector3(-1f, 0,0);
 
-                Obstacle obstacle = new Obstacle(obstacleType, pos, vel, room);
-                
+            Vector3 pos = room.SpawnersPos[laneWhereSpawn - 1];
+            Vector3 vel = new Vector3(-1f, 0, 0);
 
-                Packet SpawnObject = new Packet(Server.COMMAND_SPAWN, room.ID, obstacle.Id, obstacleType, laneWhereSpawn);
-                room.SendToAllClients(SpawnObject);
-                
+            Obstacle obstacle = new Obstacle(obstacleType, pos, vel, room);
 
-               
-            
-            
+            Console.WriteLine("Spawn Obstacle {0}", obstacle.Id);
+
+            Packet SpawnObject = new Packet(Server.COMMAND_SPAWN, room.ID, obstacle.Id, obstacleType, laneWhereSpawn);
+            room.SendToAllClients(SpawnObject);
+
+            return obstacle;
         }
     }
 }
