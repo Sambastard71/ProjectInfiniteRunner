@@ -4,9 +4,10 @@ namespace ServerProjectInfiniteRunner
     public enum ObjectType
     {
         Avatar,
-        ShortObstacle,
-        NormalObstacle,
-        TallObstacle
+        OrizontalObstacle,
+        VerticalRightObstacle,
+        VerticalLeftObstacle
+        
     }
 
     public struct Vector3

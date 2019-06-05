@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - SpawnManager
+  - CanvasGame
+  - Player2
+  - Player1
   layers:
   - Default
   - TransparentFX

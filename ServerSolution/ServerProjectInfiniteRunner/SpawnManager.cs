@@ -20,7 +20,7 @@ namespace ServerProjectInfiniteRunner
                 //rand.Next(1, 3);
 
                 Vector3 pos = room.SpawnersPos[laneWhereSpawn-1];
-                Vector3 vel = new Vector3(-1f, 0,0);
+                Vector3 vel = new Vector3(-2f, 0,0);
 
                 Obstacle obstacle = new Obstacle(obstacleType, pos, vel, room);
                 

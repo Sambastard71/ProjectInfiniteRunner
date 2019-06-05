@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Net;
 using System;
 using UnityEngine.SceneManagement;
+using System.Net.NetworkInformation;
 
 
 delegate void command(byte[] packet, EndPoint sender);
@@ -25,7 +26,14 @@ public class Client : MonoBehaviour
     public const byte COMMAND_SPAWN_OBSTACLE = 11;
     public const byte COMMAND_COLLIDE = 12;
     public const byte COMMAND_INTANGIBLE = 7;
+    public const byte COMMAND_DESTROY= 14;
 
+    public Animator animatorMenu;
+    public Animator animatorGame;
+
+    System.Net.NetworkInformation.Ping pingSender = new System.Net.NetworkInformation.Ping();
+    PingOptions options = new PingOptions(64, true);
+    PingReply reply;
 
     command[] commands;
 
@@ -47,7 +55,8 @@ public class Client : MonoBehaviour
 
     public List<GameObject> gameobjects = new List<GameObject>();
 
-    
+    bool isSpawnedPlayer2 = false;
+    bool countdownStart = false;
 
     private void OnEnable()
     {
@@ -73,10 +82,12 @@ public class Client : MonoBehaviour
         commands[COMMAND_COUNTDOWN] = Countdown;
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
         commands[COMMAND_COLLIDE] = Collided;
-        
+        commands[COMMAND_DESTROY] = DestroyObstacle;
 
 
 
+        sceneManagement.LoadGameScene();
+        SceneManager.activeSceneChanged += LoadGameSceneElements;
     }
 
    
@@ -86,6 +97,31 @@ public class Client : MonoBehaviour
         EndPoint sender = new IPEndPoint(0, 0);
         byte[] data = Recv(256, ref sender);
 
+        CheckLatency(MinePlayer);
+
+        foreach (KeyValuePair<uint, GameObject> gos in RoomDetails.GameObjects)
+        {
+            uint key = gos.Key;
+            GameObject go = gos.Value;
+
+            go.transform.position = Vector3.Lerp(go.transform.position, RoomDetails.gameObjectsNewPositions[key],(2+MinePlayer.Latency)*Time.deltaTime);
+        }
+
+        if (!isSpawnedPlayer2)
+        {
+            if (SceneManager.GetActiveScene().buildIndex == 1 && RoomDetails.Player2IsReady)
+            {
+                RoomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom, 1, (int)OtherPlayer.MyIdInRoom);
+                isSpawnedPlayer2 = true;
+                animatorGame.SetTrigger("Ready2");
+            }
+        }
+
+        if(RoomDetails.GameIsStarted)
+        {
+            animatorGame.SetBool("Countdown", false);
+        }
+
         if (data == null)
         {
             return;
@@ -93,6 +129,7 @@ public class Client : MonoBehaviour
         
 
         commands[data[0]](data, sender);
+
     }
 
     
@@ -151,12 +188,18 @@ public class Client : MonoBehaviour
         Debug.Log(MinePlayer.MyIdInRoom);
         Debug.Log(MinePlayer.RoomId);
 
+        animatorMenu.SetTrigger("FadeIn");
+
+        
+        Invoke("LoadGameScene", 2);
         
     }
     
     // (command, player2Id, roomId)
     void OtherPlayerConnected(byte[] data, EndPoint sender)
     {
+        RoomDetails.OtherPlayerIsConnected = true;
+
         if (data.Length > 9)
         {
             return;
@@ -175,10 +218,17 @@ public class Client : MonoBehaviour
         Debug.Log(OtherPlayer.MyIdInRoom);
         Debug.Log(OtherPlayer.RoomId);
 
+        if(SceneManager.GetActiveScene().buildIndex==1)
+        {
+            animatorGame.SetTrigger("P2connected");
+        }
+
     }
 
     void SetUpOtherPlayer(byte[] data, EndPoint sender)
     {
+        
+
         if (data.Length != 33)
         {
             return;
@@ -209,16 +259,22 @@ public class Client : MonoBehaviour
 
         RoomDetails.Player2IsReady = true;
 
-        Debug.Log("OtherPlayer Setupped!");
+        
 
         
-        RoomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom,1, 2);
+      
 
 
     }
 
     void Countdown(byte[] data, EndPoint sender)
     {
+        if (!countdownStart)
+        {
+            animatorGame.SetBool("Countdown", true);
+            countdownStart = false;
+        }
+
         if (data.Length != 9)
         {
             return;
@@ -278,6 +334,8 @@ public class Client : MonoBehaviour
 
     private void Update(byte[] data, EndPoint sender)
     {
+        
+
         if (data.Length != 21)
         {
             return;
@@ -321,5 +379,55 @@ public class Client : MonoBehaviour
         DestroyImmediate(RoomDetails.GameObjects[idinRoom]);
         RoomDetails.GameObjects.Remove(idinRoom);
 
+    }
+
+    private void DestroyObstacle(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 9)
+        {
+            return;
+        }
+
+        uint idinRoom = BitConverter.ToUInt32(data, 5);
+        uint roomId = BitConverter.ToUInt32(data, 1);
+
+
+        if (RoomDetails.RoomID != roomId)
+        {
+            return;
+        }
+
+        DestroyImmediate(RoomDetails.GameObjects[idinRoom]);
+        RoomDetails.GameObjects.Remove(idinRoom);
+
+    }
+
+    private void CheckLatency(PlayerDetails player)
+    {
+        
+
+        reply = pingSender.Send(serverEndPoint.Address);
+        
+
+        player.Latency = reply.RoundtripTime/1000;
+    }
+
+    private void LoadGameScene()
+    {
+        
+        sceneManagement.StartLoadScene();
+    }
+
+    private void LoadGameSceneElements(Scene current, Scene next)
+    {
+        if(next.isLoaded && next.buildIndex==1)
+        {
+            animatorGame = GameObject.FindGameObjectWithTag("CanvasGame").GetComponent<Animator>();
+
+            if(RoomDetails.OtherPlayerIsConnected==true)
+            {
+                animatorGame.SetTrigger("P2connected");
+            }
+        }
     }
 }

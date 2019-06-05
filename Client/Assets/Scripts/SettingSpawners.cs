@@ -14,13 +14,15 @@ public class SettingSpawners : MonoBehaviour
     {
         roomDetails.ParentOfGameobjectsSpawned = ParentOfGameobjectsSpawned;
         roomDetails.Spawners = Spawners;
-        if (roomDetails.minePlayer.MyIdInRoom == 0)
+        if (roomDetails.minePlayer.MyIdInRoom == 1)
         {
             roomDetails.minePlayer.Position = Spawners.transform.GetChild(0).position;
             roomDetails.otherPlayer.Position = Spawners.transform.GetChild(1).position;
 
             roomDetails.minePlayer.PositionOfSpawners = Spawners.transform.GetChild(2).position;
             roomDetails.otherPlayer.PositionOfSpawners = Spawners.transform.GetChild(3).position;
+
+            
         }
         else
         {

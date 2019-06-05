@@ -5,11 +5,14 @@ using UnityEngine;
 public class Inputs : MonoBehaviour
 {
     public RoomDetails roomDetails;
+    public Animator animator;
+
+   
 
     // Start is called before the first frame update
     void Start()
     {
-        
+           
     }
 
     // Update is called once per frame
@@ -17,11 +20,13 @@ public class Inputs : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
+            animator.SetBool("Intangible", true);
             Packet packet = new Packet(Client.COMMAND_INTANGIBLE, roomDetails.minePlayer.MyIdInRoom, roomDetails.RoomID,false);
             Client.Send(packet.GetData());
         }
         else if(Input.GetKeyUp(KeyCode.Space))
         {
+            animator.SetBool("Intangible", false);
             Packet packet = new Packet(Client.COMMAND_INTANGIBLE, roomDetails.minePlayer.MyIdInRoom, roomDetails.RoomID, true);
             Client.Send(packet.GetData());
         }

@@ -7,48 +7,11 @@ using TMPro;
 public class LobbyControl : MonoBehaviour
 {
     public RoomDetails RoomDetails;
-
-    public GameObject Slider;
-    public GameObject WaitingText;
-    public GameObject ReadyButton;
-    
-
-    string[] text;
-
     public PlayerDetails MinePlayer;
+    public Animator animatorGame;
+    public Inputs inputs;
 
-    public float AlphaDuration;
-    public float AlphaIncVal;
    
-    TextMeshProUGUI textComponent;
-
-    private void Start()
-    {
-        text = new string[2];
-        text[0] = "Waiting For Player";
-        text[1] = "Are U Ready?";
-
-        textComponent = WaitingText.GetComponent<TextMeshProUGUI>();
-        textComponent.text = text[0];
-
-        
-    }
-
-    void Update()
-    {
-        if (RoomDetails.GetPlayerInRoom() == 2)
-        {
-            Slider.SetActive(false);
-
-            if (!RoomDetails.Player1IsReady)
-            {
-                textComponent.text = text[1];
-                ReadyButton.SetActive(true);
-            }
-        }
-
-        
-    }
 
     // (comando,idpersonaggioNellaStanza,idRoom,xpos,ypos,zpos,width,height collider)
     public void OnClick()
@@ -66,18 +29,17 @@ public class LobbyControl : MonoBehaviour
         float SpawnObstacleY = MinePlayer.PositionOfSpawners.y;
         float SpawnObstacleZ = MinePlayer.PositionOfSpawners.z;
 
-
         RoomDetails.Player1IsReady = true;
         
-
 
         Packet packet = new Packet(command_setup, idMinePLayer, roomId, posX, posY ,posZ, colliderWidth, colliderHeight,SpawnObstacleX,SpawnObstacleY,SpawnObstacleZ);
         
         Client.Send(packet.GetData());
 
-        textComponent.text = text[0];
-        ReadyButton.SetActive(false);
+        RoomDetails.SpawnGameObject(MinePlayer.MyIdInRoom, 1, (int)MinePlayer.MyIdInRoom);
+        
+        animatorGame.SetTrigger("Ready");
 
-        RoomDetails.SpawnGameObject(MinePlayer.MyIdInRoom, 1, 1);
+       
     }
 }

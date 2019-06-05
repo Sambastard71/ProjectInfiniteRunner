@@ -24,10 +24,16 @@ public class RoomDetails : ScriptableObject
     bool spawnPlayers;
 
     [SerializeField]
+    bool otherPlayerIsConnected;
+
+    [SerializeField]
     float countdownToPlay;
 
     [SerializeField]
     Dictionary<uint, GameObject> gameObjects;
+
+    [SerializeField]
+    public Dictionary<uint, Vector3> gameObjectsNewPositions;
 
     [SerializeField]
     GameObject spawners;
@@ -38,7 +44,7 @@ public class RoomDetails : ScriptableObject
     [SerializeField]
     public GameObject[] prefabsObstacles;
 
-    
+
     public GameObject prefabPlayer1;
     public GameObject prefabPlayer2;
 
@@ -85,6 +91,12 @@ public class RoomDetails : ScriptableObject
     {
         get { return gameIsStarted; }
         set { gameIsStarted = value; }
+    }
+
+    public bool OtherPlayerIsConnected
+    {
+        get { return otherPlayerIsConnected; }
+        set { otherPlayerIsConnected = value; }
     }
 
     public bool SpawnPlayers
@@ -175,8 +187,10 @@ public class RoomDetails : ScriptableObject
         player2IsReady = false;
         gameIsStarted = false;
         spawnPlayers = false;
+        otherPlayerIsConnected = false;
         countdownToPlay = 3;
         gameObjects = new Dictionary<uint, GameObject>();
+        gameObjectsNewPositions = new Dictionary<uint, Vector3>();
         
     }
 
@@ -193,6 +207,7 @@ public class RoomDetails : ScriptableObject
                 {
                     go = prefabPlayer1;
                     go.transform.position = minePlayer.Position;
+                    go.tag = "Player1";
                 }
                 else
                 {
@@ -239,13 +254,21 @@ public class RoomDetails : ScriptableObject
         }
 
         gameObjects.Add(id, obstacle);
+        gameObjectsNewPositions.Add(id, obstacle.transform.position);
     }
 
     public bool UpdateGameObject(uint id, float posX, float posY, float posZ)
     {
+        
         if (gameObjects.ContainsKey(id))
         {
-            gameObjects[id].transform.position = new Vector3(posX, posY, posZ);
+            Vector3 newpos = new Vector3(posX, posY, posZ);
+
+            gameObjectsNewPositions[id] = newpos;
+
+            Vector3 oldpos = gameObjects[id].transform.position;
+
+            
 
             return true;
         }
@@ -254,5 +277,7 @@ public class RoomDetails : ScriptableObject
             return false;
         }
     }
+
+    
 }
 

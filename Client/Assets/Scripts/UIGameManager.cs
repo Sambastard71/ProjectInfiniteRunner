@@ -12,38 +12,21 @@ public class UIGameManager : MonoBehaviour
     public GameObject GamePanel;
 
     LobbyControl lobbyControl;
+    Animator animator;
 
-    
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
         lobbyControl = PreStartPanel.GetComponent<LobbyControl>();
-        GamePanel.SetActive(false);
-        PreStartPanel.SetActive(true);
-    }
 
+    }
     // Update is called once per frame
     void Update()
     {
-        if(checkStartPanel())
-        {
-            GamePanel.SetActive(true);
-            PreStartPanel.SetActive(false);
-        }
+        
         
     }
 
-    private bool checkStartPanel()
-    {
-        bool StartCountdown = false;
-
-        if(RoomDetails.PlayersAreReady)
-        {
-            lobbyControl.ReadyButton.SetActive(false);
-            lobbyControl.WaitingText.SetActive(false);
-            StartCountdown = true;
-        }
-
-        return StartCountdown;
-    }
+    
 }

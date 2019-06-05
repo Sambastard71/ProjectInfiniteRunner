@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class ButtonMethods : MonoBehaviour
 {
-    public FadeInPanel fadeInPanel;
+    public GameObject LoadingPanel;
+    public Animator animator;
 
     byte[] packet;
 
@@ -13,8 +14,8 @@ public class ButtonMethods : MonoBehaviour
         packet = new byte[1];
         packet[0] = 1;
         Client.Send(packet);
-        fadeInPanel.gameObject.SetActive(true);
-        fadeInPanel.FadeIn = true;
+        LoadingPanel.gameObject.SetActive(true);
+        animator.SetTrigger("Start");
     }
     
     public void QuitButton()
