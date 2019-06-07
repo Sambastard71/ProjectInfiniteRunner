@@ -79,7 +79,6 @@ namespace ServerProjectInfiniteRunner
                 Packet packet = sendQueue.Dequeue();
                 if (connectedServer.Send(packet.GetData(), endPoint))
                 {
-                    //Console.WriteLine("Client" + id + " has sent " + packet.GetData()[0] + " Packet");
                     if (packet.NeedsAck)
                     {
                         waitingForAck[packet.ID] = packet;

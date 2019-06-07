@@ -200,7 +200,7 @@ namespace ServerProjectInfiniteRunner
                 SpawnManager.Spawn(this, lane);
 
                 countDownSpawn = spawnTimer;
-                Console.WriteLine("SpawnTimer: "+spawnTimer);
+                //Console.WriteLine("SpawnTimer: "+spawnTimer);
                 SpawnTimer = spawnTimer;
             }
         }

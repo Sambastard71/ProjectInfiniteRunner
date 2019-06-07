@@ -13,20 +13,29 @@ namespace ServerProjectInfiniteRunner
 
         public Obstacle(uint objectType, Vector3 pos, Vector3 vel, Room ownerRoom) : base(objectType, ownerRoom)
         {
-
+            
             SetPosition(pos.X, pos.Y, pos.Z);
             SetVelocity(vel.X, vel.Y, vel.Z);
+            
+            if (objectType == 2)
+            {
+                Width = 34.4f;
+                Height = 87.4f;
+            }
+            else if (objectType == 3)
+            {
+                Width = 87.4f;
+                Height = 34.4f;
+            }
 
-            Width = 25;
-            Height = 45;
-
-
+            
             collider = new Collider2D(this);
 
             collider.CollisionType = (uint)UpdateManager.ColliderType.Obstacle;
             collider.AddCollision((uint)UpdateManager.ColliderType.Player);
 
             UpdateManager.AddItem(this);
+
         }
 
         //public bool CheckCollisionWith(Collider2D collider)

@@ -1016,22 +1016,22 @@ namespace ServerProjectInfiniteRunner.Test
             Assert.That(transport.ClientDequeue().data[0], Is.EqualTo(Server.COMMAND_SPAWN));
         }
 
-        [Test]
-        public void TestUpdateObstacle()
-        {
-            Packet join = new Packet((byte)1);
-            transport.ClientEnqueue(join, "Client1", 0);
+        //[Test]
+        //public void TestUpdateObstacle()
+        //{
+        //    Packet join = new Packet((byte)1);
+        //    transport.ClientEnqueue(join, "Client1", 0);
 
-            server.SingleStep();
+        //    server.SingleStep();
 
-            Obstacle obstacle = SpawnManager.Spawn(server.GetRoom(0), 1);
-            obstacle.SetPosition(100f, 100f, 100f);
+        //    Obstacle obstacle = SpawnManager.Spawn(server.GetRoom(0), 1);
+        //    obstacle.SetPosition(100f, 100f, 100f);
 
-            clock.IncreaseTimeStamp(1);
+        //    clock.IncreaseTimeStamp(1);
 
-            server.Process();
+        //    server.Process();
 
-            Assert.That(obstacle.Position.X, Is.EqualTo(100 + (obstacle.Velocity.X)));
-        }
+        //    Assert.That(obstacle.Position.X, Is.EqualTo(100 + (obstacle.Velocity.X)));
+        //}
     }
 }
