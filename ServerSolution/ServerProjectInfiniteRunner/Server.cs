@@ -19,6 +19,8 @@ namespace ServerProjectInfiniteRunner
 
         public const float TIME_TO_SEND_UPDATE = 0.6f;
 
+        const float TIME_TO_CHECK_PING = 5.0f;
+        float timer;
         //Command List To Update
 
         public const byte COMMAND_JOIN = 1;
@@ -34,6 +36,10 @@ namespace ServerProjectInfiniteRunner
         public const byte COMMAND_COLLIDE = 12;
         public const byte COMMAND_INTANGIBLE_OP = 13;
         public const byte COMMAND_DESTROY = 14;
+        public const byte COMMAND_CHANGE_POS_Z = 15;
+        public const byte COMMAND_CHANGE_POS_OP = 16;
+        public const byte COMMAND_CHECK_PING = 17;
+        public const byte COMMAND_PING_RESPONSE = 18;
 
 
 
@@ -82,11 +88,13 @@ namespace ServerProjectInfiniteRunner
 
             clock = gameClock;
 
-            commands = new command[COMMAND_P_CONNECTED + 1];
+            commands = new command[20];
 
             commands[COMMAND_JOIN] = Join;
             commands[COMMAND_SETUP] = SetUp;
             commands[COMMAND_INTANGIBLE] = Intangible;
+            commands[COMMAND_CHANGE_POS_Z] = ChangePlayerPos;
+            commands[COMMAND_PING_RESPONSE] = PingResponse;
 
             Client.ResetNumberOfPlayer();
             GameObject.ResetGoCounter();
@@ -132,6 +140,7 @@ namespace ServerProjectInfiniteRunner
             //if Game in a room is starting do this
             foreach (Room room in Rooms)
             {
+                CheckPing();
                 room.Process();
             }
         }
@@ -321,6 +330,100 @@ namespace ServerProjectInfiniteRunner
             {
                 rooms[(int)idRoom].Players[0].Enqueue(intangibleOp);
             }
+        }
+
+        private void ChangePlayerPos(byte[] packet, EndPoint endPoint)
+        {
+            Client c;
+
+            if (packet.Length != 13 || !clients.Exists(client => client.EndPoint.Equals(endPoint)))
+            {
+                foreach (Client client in clients)
+                {
+                    if (client.EndPoint.Equals(endPoint))
+                    {
+                        client.malus -= 10;
+                    }
+                }
+                return;
+            }
+
+            uint idRoom = BitConverter.ToUInt32(packet, 1);
+            uint idPersonaggio = BitConverter.ToUInt32(packet, 5);
+            float newPosZ = BitConverter.ToSingle(packet, 9);
+
+            Room room = Rooms[(int)idRoom];
+            c = room.Players[(int)idPersonaggio - 1];
+
+            Vector3 pos = c.Avatar.Position;
+
+            c.Avatar.SetPosition(pos.X, pos.Y, newPosZ);
+            
+            Packet changePlayerPosition = new Packet(COMMAND_CHANGE_POS_OP, idRoom, idPersonaggio, newPosZ);
+
+            if (idPersonaggio == 1)
+            {
+                rooms[(int)idRoom].Players[1].Enqueue(changePlayerPosition);
+            }
+            else if (idPersonaggio == 2)
+            {
+                rooms[(int)idRoom].Players[0].Enqueue(changePlayerPosition);
+            }
+        }
+
+        //(uint Command, uint roomId, uint playerId, float sendTimeStamp)
+        public void PingResponse(byte[] packet, EndPoint endPoint)
+        {
+            Client c;
+
+            if (packet.Length != 13 || !clients.Exists(client => client.EndPoint.Equals(endPoint)))
+            {
+                foreach (Client client in clients)
+                {
+                    if (client.EndPoint.Equals(endPoint))
+                    {
+                        client.malus -= 10;
+                    }
+                }
+                return;
+            }
+
+            uint idRoom = BitConverter.ToUInt32(packet, 1);
+            uint idPersonaggio = BitConverter.ToUInt32(packet, 5);
+            float sendTimeStamp = BitConverter.ToSingle(packet, 9);
+
+            Room room = GetRoom((int)idRoom);
+
+            float ping = clock.GetNow() - sendTimeStamp;
+
+            Packet pingResp = new Packet(COMMAND_PING_RESPONSE, idRoom, idPersonaggio, ping);
+
+            if (idPersonaggio == 1)
+            {
+                rooms[(int)idRoom].Players[1].Enqueue(pingResp);
+            }
+            else if (idPersonaggio == 2)
+            {
+                rooms[(int)idRoom].Players[0].Enqueue(pingResp);
+            }
+        }
+
+        public void CheckPing()
+        {
+            timer += clock.DeltaTime();
+
+            if (timer >= TIME_TO_CHECK_PING)
+            {
+                Packet checkPing = new Packet(COMMAND_CHECK_PING, clock.GetNow());
+
+                foreach (Room room in Rooms)
+                {
+                    room.SendToAllClients(checkPing);
+                }
+
+                timer = 0;
+            }
+
         }
 
         public Client GetClient(int roomId, int idInRoom)
