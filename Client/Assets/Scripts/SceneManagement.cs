@@ -40,7 +40,7 @@ public class SceneManagement : MonoBehaviour
 
         while (!asyncload.isDone && !startGame)
         {
-            Debug.Log(asyncload.progress);
+            
             yield return null;
         }
 

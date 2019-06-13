@@ -50,7 +50,9 @@ public class RoomDetails : ScriptableObject
     public PlayerDetails minePlayer;
     public PlayerDetails otherPlayer;
 
-    
+    private Vector3 MPpositionOfSpawner;
+    private Vector3 OPpositionOfSpawner;
+
 
     public GameObject Spawners
     {
@@ -192,68 +194,56 @@ public class RoomDetails : ScriptableObject
         countdownToPlay = 3;
         gameObjects = new Dictionary<uint, GameObject>();
         gameObjectsNewPositions = new Dictionary<uint, Vector3>();
+
+
         
     }
 
 
 
-    public void SpawnGameObject(uint id, uint objectType, int laneToSpawn)
+    public void SpawnGameObject(uint id, uint objectType, Vector3 pos)
     {
+        MPpositionOfSpawner = minePlayer.PositionOfSpawners;
+        OPpositionOfSpawner = otherPlayer.PositionOfSpawners;
+
+
         GameObject go;
 
-        switch (objectType)
+        if (objectType == 1)
         {
-            case 1:
-                if (laneToSpawn == 1)
-                {
-                    go = prefabPlayer1;
-                    go.transform.position = minePlayer.Position;
-                    
-                }
-                else
-                {
-                    go = prefabPlayer2;
-                    go.transform.position = otherPlayer.Position;
-                   
-                }
+            if (id == minePlayer.MyIdInRoom)
+            {
+                go = prefabPlayer1;
+                
 
-                break;
-            case 2:
-                go = prefabsObstacles[0];
-                break;
-            case 3:
-                go = prefabsObstacles[1];
-                break;
-            case 4:
-                go = prefabsObstacles[2];
-                break;
-            default:
-                System.Console.WriteLine("Wrong object type");
-                return;
+            }
+            else
+            {
+                go = prefabPlayer2;
+                
 
+            }
         }
-
-        GameObject obstacle = Instantiate(go, ParentOfGameobjectsSpawned);
-
-        Debug.Log("Spawn Gameobj");
-
-
-        if (objectType != 1 && laneToSpawn == 1)
+        else if (objectType == 2)
         {
-
-            obstacle.transform.localPosition = minePlayer.PositionOfSpawners;
-        }
-        else if (objectType != 1 && laneToSpawn == 2)
-        {
-
-            obstacle.transform.localPosition = otherPlayer.PositionOfSpawners;
-            
-
+            go = prefabsObstacles[0];
         }
         else
         {
-            System.Console.WriteLine("Wrong spawn datas!");
+            go = prefabsObstacles[1];
         }
+
+        
+
+        GameObject obstacle = Instantiate(go, ParentOfGameobjectsSpawned);
+
+        
+
+
+        
+        obstacle.transform.localPosition = pos;
+
+        
 
         gameObjects.Add(id, obstacle);
         gameObjectsNewPositions.Add(id, obstacle.transform.position);
@@ -264,13 +254,15 @@ public class RoomDetails : ScriptableObject
         
         if (gameObjects.ContainsKey(id))
         {
+            
+
             Vector3 newpos = new Vector3(posX, posY, posZ);
 
             gameObjectsNewPositions[id] = newpos;
 
             Vector3 oldpos = gameObjects[id].transform.position;
 
-            
+
 
             return true;
         }

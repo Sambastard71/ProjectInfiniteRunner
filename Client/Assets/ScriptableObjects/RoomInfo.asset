@@ -24,12 +24,8 @@ MonoBehaviour:
   parentOfGameobjectsSpawned: {fileID: 0}
   prefabsObstacles:
   - {fileID: 507010676520576809, guid: 8c426105396ac5d4197a90323c399094, type: 3}
-  - {fileID: 507010676520576809, guid: 8c426105396ac5d4197a90323c399094, type: 3}
-  - {fileID: 507010676520576809, guid: 8c426105396ac5d4197a90323c399094, type: 3}
-  animatorOP: {fileID: 6635500071817663391, guid: 941758428e3ebb640b6f0bb378fe0a09,
-    type: 3}
-  animatorP: {fileID: 8646066176551976913, guid: a80da47543eb3144e98b1caf14196a7d,
-    type: 3}
+  - {fileID: 507010676520576809, guid: 796b888b6f00f2f4da5dd2218030a0af, type: 3}
+  - {fileID: 507010676520576809, guid: 796b888b6f00f2f4da5dd2218030a0af, type: 3}
   prefabPlayer1: {fileID: 5732369712869002747, guid: a80da47543eb3144e98b1caf14196a7d,
     type: 3}
   prefabPlayer2: {fileID: 1069082336396908754, guid: 941758428e3ebb640b6f0bb378fe0a09,

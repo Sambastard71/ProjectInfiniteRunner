@@ -12,6 +12,12 @@ delegate void command(byte[] packet, EndPoint sender);
 
 public class Client : MonoBehaviour
 {
+    public delegate void EventP2Intangible(bool boolean);
+    public static event EventP2Intangible Player2Intangible;
+
+    public delegate void Player2Moves(float Zpos);
+    public static event Player2Moves movesPlayer2;
+
     public string ServerAddress;
     public int ServerPort;
 
@@ -28,6 +34,10 @@ public class Client : MonoBehaviour
     public const byte COMMAND_INTANGIBLE = 7;
     public const byte COMMAND_DESTROY= 14;
     public const byte COMMAND_INTANGIBLEOP = 13;
+    public const byte COMMAND_CHANGEPLAYERPOSITION = 15;
+    public const byte COMMAND_CHANGEOTHERPLAYERPOSITION = 16;
+    public const byte COMMAND_CHECKPING = 17;
+    public const byte COMMAND_CHECKRESPONSE = 18;
 
 
 
@@ -88,11 +98,10 @@ public class Client : MonoBehaviour
         commands[COMMAND_SPAWN_OBSTACLE] = SpawnObstacle;
         commands[COMMAND_COLLIDE] = Collided;
         commands[COMMAND_DESTROY] = DestroyObstacle;
-
         commands[COMMAND_INTANGIBLEOP] = IntangibleOP;
-
-
-
+        commands[COMMAND_CHANGEOTHERPLAYERPOSITION] = ChangePosOP;
+        commands[COMMAND_CHECKPING] = CheckLatency;
+        commands[COMMAND_CHECKRESPONSE] = CheckResponse;
 
 
         sceneManagement.LoadGameScene();
@@ -106,15 +115,23 @@ public class Client : MonoBehaviour
         EndPoint sender = new IPEndPoint(0, 0);
         byte[] data = Recv(256, ref sender);
 
+        if (data!= null)
+        {
+            
+            commands[data[0]](data,sender);
+        }
 
-        //CheckLatency(MinePlayer);
 
         foreach (KeyValuePair<uint, GameObject> gos in roomDetails.GameObjects)
         {
             uint key = gos.Key;
+
+            if (key == 1 || key == 2)
+                continue;
+        
             GameObject go = gos.Value;
 
-            go.transform.position = Vector3.Lerp(go.transform.position, roomDetails.gameObjectsNewPositions[key],(2+MinePlayer.Latency)*Time.deltaTime);
+            go.transform.position = Vector3.Lerp(go.transform.position, roomDetails.gameObjectsNewPositions[key],(1+MinePlayer.Latency)*Time.deltaTime);
 
         }
 
@@ -122,7 +139,7 @@ public class Client : MonoBehaviour
         {
             if (SceneManager.GetActiveScene().buildIndex == 1 && roomDetails.Player2IsReady)
             {
-                roomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom, 1, (int)OtherPlayer.MyIdInRoom);
+                roomDetails.SpawnGameObject(OtherPlayer.MyIdInRoom, 1, OtherPlayer.Position);
                 isSpawnedPlayer2 = true;
                 animatorGame.SetTrigger("Ready2");
             }
@@ -133,8 +150,7 @@ public class Client : MonoBehaviour
             animatorGame.SetBool("Countdown", false);
         }
 
-       
-        
+
 
 
     }
@@ -146,6 +162,7 @@ public class Client : MonoBehaviour
         bool success = false;
         try
         {
+            
             int rlen = socket.SendTo(data, ServerEndPoint);
             if (rlen == data.Length)
                 success = true;
@@ -192,8 +209,7 @@ public class Client : MonoBehaviour
 
         roomDetails.AddPlayerRoom(true);
 
-        Debug.Log(MinePlayer.MyIdInRoom);
-        Debug.Log(MinePlayer.RoomId);
+        
 
         animatorMenu.SetTrigger("FadeIn");
 
@@ -222,8 +238,7 @@ public class Client : MonoBehaviour
 
         roomDetails.AddPlayerRoom(true);
         
-        Debug.Log(OtherPlayer.MyIdInRoom);
-        Debug.Log(OtherPlayer.RoomId);
+        
 
         if(SceneManager.GetActiveScene().buildIndex==1)
         {
@@ -319,7 +334,7 @@ public class Client : MonoBehaviour
 
     private void SpawnObstacle(byte[] data, EndPoint sender)
     {
-        if (data.Length != 17)
+        if (data.Length != 25)
         {
             return;
         }
@@ -327,16 +342,20 @@ public class Client : MonoBehaviour
         uint roomId = BitConverter.ToUInt32(data, 1);
         uint idinRoom = BitConverter.ToUInt32(data, 5);
         uint objectType = BitConverter.ToUInt32(data, 9);
-        int laneToSpawn = BitConverter.ToInt32(data, 13);
+        float posX = BitConverter.ToSingle(data, 13);
+        float posY = BitConverter.ToSingle(data, 17);
+        float posZ = BitConverter.ToSingle(data, 21);
+
+        Vector3 pos = new Vector3(posX, posY, posZ);
 
         if (roomDetails.RoomID != roomId)
         {
             return;
         }
 
-        Debug.Log("Spawn data recieved");
+       
 
-        roomDetails.SpawnGameObject(idinRoom,objectType,laneToSpawn);
+        roomDetails.SpawnGameObject(idinRoom,objectType,pos);
     }
 
     private void Update(byte[] data, EndPoint sender)
@@ -411,7 +430,7 @@ public class Client : MonoBehaviour
 
     private void IntangibleOP(byte[] data, EndPoint sender)
     {
-        if (data.Length != 9)
+        if (data.Length != 6)
         {
             return;
         }
@@ -425,20 +444,59 @@ public class Client : MonoBehaviour
             return;
         }
 
-        roomDetails.GameObjects[OtherPlayer.MyIdInRoom].GetComponent<Animator>().SetBool("Intangible", isIntangible);
+        Player2Intangible(isIntangible);
 
     }
 
-   
-
-    private void CheckLatency(PlayerDetails player)
+    private void ChangePosOP(byte[] data, EndPoint sender)
     {
+        if (data.Length != 13)
+        {
+            return;
+        }
+        
+        uint rooomId = BitConverter.ToUInt32(data, 1);
+        uint Id = BitConverter.ToUInt32(data, 5);
+        float zPos = BitConverter.ToSingle(data, 9);
+
+        if(Id != OtherPlayer.MyIdInRoom)
+        {
+            return;
+        }
+
+        movesPlayer2(zPos);
         
 
-        reply = pingSender.Send(serverEndPoint.Address);
-        
+    }
 
-        player.Latency = reply.RoundtripTime/1000;
+
+    private void CheckLatency(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 5)
+        {
+            return;
+        }
+
+        float time = BitConverter.ToSingle(data, 1);
+
+        Packet packet = new Packet(Client.COMMAND_CHECKPING, MinePlayer.RoomId, MinePlayer.MyIdInRoom, time);
+        Client.Send(packet.GetData());
+    }
+
+    private void CheckResponse(byte[] data, EndPoint sender)
+    {
+        if (data.Length != 13)
+        {
+            return;
+        }
+
+        uint roomID = BitConverter.ToUInt32(data, 1);
+        uint Id = BitConverter.ToUInt32(data, 5);
+        float ping = BitConverter.ToSingle(data, 9);
+
+        MinePlayer.Latency = ping;
+        Debug.Log(ping);
+        
     }
 
     private void LoadGameScene()
@@ -446,6 +504,8 @@ public class Client : MonoBehaviour
         
         sceneManagement.StartLoadScene();
     }
+
+
 
     private void LoadGameSceneElements(Scene current, Scene next)
     {

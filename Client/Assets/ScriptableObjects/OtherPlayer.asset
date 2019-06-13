@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844ae86d345d0a746be593024fc9083e, type: 3}
   m_Name: OtherPlayer
   m_EditorClassIdentifier: 
+  Latency: 0
+  Width: 87.8
+  Height: 34.4

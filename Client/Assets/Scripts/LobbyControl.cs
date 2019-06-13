@@ -36,7 +36,7 @@ public class LobbyControl : MonoBehaviour
         
         Client.Send(packet.GetData());
 
-        RoomDetails.SpawnGameObject(MinePlayer.MyIdInRoom, 1, (int)MinePlayer.MyIdInRoom);
+        RoomDetails.SpawnGameObject(MinePlayer.MyIdInRoom, 1, MinePlayer.Position);
         
         animatorGame.SetTrigger("Ready");
 

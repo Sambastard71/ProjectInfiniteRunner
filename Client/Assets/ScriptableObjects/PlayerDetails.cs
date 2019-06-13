@@ -16,6 +16,9 @@ public class PlayerDetails : ScriptableObject
     float colliderHeight;
 
     public float Latency;
+    public float Width;
+    public float Height;
+
 
     public uint RoomId
     {
