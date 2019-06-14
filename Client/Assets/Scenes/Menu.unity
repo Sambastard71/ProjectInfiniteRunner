@@ -481,10 +481,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b769a9f5f9e6eba46b2e83f6e03e8323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ServerAddress: 192.168.1.114
+  ServerAddress: 192.168.43.188
   ServerPort: 9999
-  MyAddres: 192.168.1.232
-  MyPort: 9998
+  MyAddres: 192.168.43.130
+  MyPort: 9992
   animatorMenu: {fileID: 236740820}
   animatorGame: {fileID: 0}
   animatorOP: {fileID: 0}

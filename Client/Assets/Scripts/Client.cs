@@ -131,7 +131,7 @@ public class Client : MonoBehaviour
         
             GameObject go = gos.Value;
 
-            go.transform.position = Vector3.Lerp(go.transform.position, roomDetails.gameObjectsNewPositions[key],(1+MinePlayer.Latency)*Time.deltaTime);
+            go.transform.position = Vector3.Lerp(go.transform.position, roomDetails.gameObjectsNewPositions[key],(15+MinePlayer.Latency)*Time.deltaTime);
 
         }
 
