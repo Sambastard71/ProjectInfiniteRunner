@@ -9,7 +9,7 @@ namespace ServerProjectInfiniteRunner
     public class Obstacle : GameObject, IUpdatable
     {
         Collider2D collider;
-        const float DESPAWN_OFFSET = 225;
+        const float DESPAWN_OFFSET = 500;
 
         public Obstacle(uint objectType, Vector3 pos, Vector3 vel, Room ownerRoom) : base(objectType, ownerRoom)
         {
@@ -111,7 +111,7 @@ namespace ServerProjectInfiniteRunner
 
         public override void SendUpdate()
         {
-            counterToUpdate -= 0.02f;
+            counterToUpdate -= 0.09f;
             if (counterToUpdate <= 0)
             {
                 Packet packet = new Packet(Server.COMMAND_UPDATE, Id, ownerRoom.ID, Position.X, Position.Y, Position.Z);

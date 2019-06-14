@@ -29,8 +29,13 @@ namespace ServerProjectInfiniteRunner
             int subLane = rand.Next(1, 3);
             
             Vector3 pos = room.SpawnersPos[laneWhereSpawn - 1];
-            Vector3 vel = new Vector3(-50f, 0, 0);
-            
+            Vector3 vel = new Vector3(-100f, 0, 0);
+
+            if (obstacleType == 3)
+            {
+                vel = new Vector3(-150f, 0, 0);
+            }
+
             float Z = pos.Z;
             if (obstacleType != 2)
             {
@@ -48,8 +53,8 @@ namespace ServerProjectInfiniteRunner
             pos  = new Vector3(pos.X, pos.Y, Z);
 
             Obstacle obstacle = new Obstacle(obstacleType, pos, vel, room);
-            Console.WriteLine("Spawn Obstacle {0}", obstacle.Id);
-            Console.WriteLine("obstacleType: " + obstacleType + " obstacle lane: " + laneWhereSpawn);
+            //Console.WriteLine("Spawn Obstacle {0}", obstacle.Id);
+            //Console.WriteLine("obstacleType: " + obstacleType + " obstacle lane: " + laneWhereSpawn);
             Packet SpawnObject = new Packet(Server.COMMAND_SPAWN, room.ID, obstacle.Id, obstacleType, pos.X, pos.Y, pos.Z);
             room.SendToAllClients(SpawnObject);
 

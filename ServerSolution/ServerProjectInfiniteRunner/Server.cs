@@ -94,7 +94,7 @@ namespace ServerProjectInfiniteRunner
             commands[COMMAND_SETUP] = SetUp;
             commands[COMMAND_INTANGIBLE] = Intangible;
             commands[COMMAND_CHANGE_POS_Z] = ChangePlayerPos;
-            commands[COMMAND_PING_RESPONSE] = PingResponse;
+            commands[COMMAND_CHECK_PING] = PingResponse;
 
             Client.ResetNumberOfPlayer();
             GameObject.ResetGoCounter();
@@ -138,9 +138,9 @@ namespace ServerProjectInfiniteRunner
         public void Process()
         {
             //if Game in a room is starting do this
+            CheckPing();
             foreach (Room room in Rooms)
             {
-                CheckPing();
                 room.Process();
             }
         }
@@ -400,11 +400,11 @@ namespace ServerProjectInfiniteRunner
 
             if (idPersonaggio == 1)
             {
-                rooms[(int)idRoom].Players[1].Enqueue(pingResp);
+                rooms[(int)idRoom].Players[0].Enqueue(pingResp);
             }
             else if (idPersonaggio == 2)
             {
-                rooms[(int)idRoom].Players[0].Enqueue(pingResp);
+                rooms[(int)idRoom].Players[1].Enqueue(pingResp);
             }
         }
 
